@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>كيفن للكوكيز</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;500;600;700;800;900&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,600&display=swap" rel="stylesheet">
+<style>
+/* Layout: a 1920×1080 light "film" stage scaled into a themed player, with the narration script beneath it. */
+:root{
+  /* stage: one fixed light look, like a printed bakery box (never themed) */
+  --s-bg:#FFF8EF; --s-milk:#FFFDF9; --s-ink:#3B2418; --s-muted:#8A6B57;
+  --s-caramel:#C27A36; --s-caramel-dk:#9A5A24; --s-gold:#E7B15F; --s-tan:#EBD6B8;
+  --s-line:#EADBC6; --s-mint:#5E9C7E; --s-berry:#B9503C; --s-soft:#F6E6CF;
+  /* page chrome (themed) */
+  --bg:#F3EFEA; --surface:#FFFFFF; --fg:#2E211A; --muted:#7A685C; --line:#E2D8CD;
+  --accent:#B06A2C; --accent-fg:#FFFFFF; --chip:#F4E7D6;
+  --display:'Alexandria','Segoe UI',Tahoma,sans-serif;
+  --latin:'Fraunces',Georgia,'Times New Roman',serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#191411; --surface:#231C17; --fg:#F2E9E0; --muted:#B4A394; --line:#3A2F27;
+    --accent:#E2A25E; --accent-fg:#1D140E; --chip:#33271E; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#191411; --surface:#231C17; --fg:#F2E9E0; --muted:#B4A394; --line:#3A2F27;
+  --accent:#E2A25E; --accent-fg:#1D140E; --chip:#33271E; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--display);padding-inline:16px;padding-block:20px 40px}
+.page{max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+.page-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 24px}
+.page-head h1{margin:0;font-size:clamp(1.3rem,2.4vw,1.75rem);font-weight:800;text-wrap:balance}
+.page-head h1 span{font-family:var(--latin);font-style:italic;font-weight:400;color:var(--muted);font-size:.7em;margin-inline-start:.4em}
+.page-head p{margin:0;color:var(--muted);font-size:.95rem;max-width:60ch;line-height:1.7}
+
+/* ---------- player ---------- */
+.player{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.viewport{position:relative;width:100%;aspect-ratio:16/9;max-width:100%;background:var(--s-bg);overflow:hidden;cursor:pointer}
+.player:fullscreen .viewport{aspect-ratio:auto;height:calc(100% - 64px)}
+.player:fullscreen{border-radius:0;display:flex;flex-direction:column}
+.bigplay{position:absolute;inset:0;margin:auto;width:clamp(56px,9vw,104px);height:clamp(56px,9vw,104px);border-radius:50%;border:0;background:rgba(59,36,24,.82);color:#FFF8EF;display:grid;place-items:center;transition:opacity .25s,transform .25s;z-index:5}
+.bigplay svg{width:42%;height:42%;margin-inline-start:-8%}
+.bigplay[hidden]{display:none!important}
+.bigplay:focus-visible{outline:3px solid var(--s-gold);outline-offset:4px}
+
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;padding:12px 14px;border-top:1px solid var(--line)}
+.cbtn{height:40px;min-width:40px;padding:0 12px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--fg);display:inline-flex;align-items:center;justify-content:center;gap:6px;font:600 .85rem var(--display);cursor:pointer}
+.cbtn svg{width:18px;height:18px;flex:none}
+.cbtn:hover{background:var(--chip)}
+.cbtn:focus-visible,.scrub:focus-visible,.cue:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.cbtn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.cbtn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg);padding:0}
+.time{font-variant-numeric:tabular-nums;color:var(--muted);font-size:.85rem;min-width:7.5em;text-align:center}
+.scrub{position:relative;flex:1 1 260px;height:40px;cursor:pointer;touch-action:none}
+.scrub .track{position:absolute;inset-inline:0;top:17px;height:6px;border-radius:99px;background:var(--line)}
+.scrub .fill{position:absolute;inset-inline-start:0;top:17px;height:6px;border-radius:99px;background:var(--accent);width:0}
+.scrub .knob{position:absolute;top:12px;width:16px;height:16px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 25%,transparent);transform:translateX(50%);inset-inline-start:0}
+.scrub .tick{position:absolute;top:14px;width:2px;height:12px;background:var(--surface);border-radius:2px}
+.file-in{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.toast{color:var(--muted);font-size:.8rem;flex-basis:100%;min-height:1em;margin:0}
+.toast:empty{display:none}
+
+/* ---------- script ---------- */
+.script{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px clamp(14px,2.4vw,26px)}
+.script h2{margin:0 0 4px;font-size:1.05rem;font-weight:800}
+.script>p{margin:0 0 12px;color:var(--muted);font-size:.88rem;line-height:1.7;max-width:70ch}
+.cues{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.cue{display:grid;grid-template-columns:5.5em 7.5em minmax(0,1fr);gap:12px;align-items:baseline;width:100%;text-align:start;background:transparent;border:0;border-radius:10px;padding:9px 10px;color:var(--fg);font:400 .98rem/1.75 var(--display);cursor:pointer}
+.cue:hover{background:var(--chip)}
+.cue.cur{background:var(--chip)}
+.cue.cur .ct{color:var(--accent)}
+.cue .ct{font-variant-numeric:tabular-nums;color:var(--muted);font-size:.85rem}
+.cue .cs{font-size:.75rem;color:var(--muted);letter-spacing:.02em}
+@media (max-width:620px){
+  .cue{grid-template-columns:4.6em minmax(0,1fr)}
+  .cue .cs{display:none}
+  .cbtn .lbl{display:none}
+}
+
+/* =====================================================================
+   STAGE  (1920×1080 design units)
+   ===================================================================== */
+.stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;direction:rtl;font-family:var(--display);color:var(--s-ink);background:var(--s-bg);overflow:hidden;contain:strict}
+.stage *{box-sizing:border-box}
+.bg-blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.55;will-change:transform}
+.bg-blob.b1{width:900px;height:700px;background:#FBE3C2;top:-200px;right:-150px}
+.bg-blob.b2{width:800px;height:640px;background:#F8EBDD;bottom:-260px;left:-120px}
+.grain{position:absolute;inset:0;opacity:.06;mix-blend-mode:multiply;pointer-events:none}
+canvas.chips{position:absolute;inset:0;width:1920px;height:1080px;pointer-events:none}
+
+.scene{position:absolute;inset:0;visibility:hidden;opacity:calc(var(--in,0) * (1 - var(--out,0)))}
+.scene.on{visibility:visible}
+.cam,.drift{position:absolute;inset:0;transform-origin:50% 50%}
+.drift{transform:scale(calc(1 + var(--sp,0) * .025))}
+.scene[data-tr="fade"] .cam{transform:scale(calc(1.04 - var(--in,0) * .04 + var(--out,0) * .03))}
+.scene[data-tr="rise"] .cam{transform:translateY(calc((1 - var(--in,0)) * 70px - var(--out,0) * 40px))}
+.scene[data-tr="slide"] .cam{transform:translateX(calc((1 - var(--in,0)) * -140px + var(--out,0) * 120px))}
+.scene[data-tr="blur"] .cam{filter:blur(calc((1 - var(--in,0)) * 16px + var(--out,0) * 10px));transform:scale(calc(1.03 - var(--in,0) * .03))}
+.scene[data-tr="iris"]{clip-path:circle(calc(var(--in,0) * 80%) at 50% 50%)}
+.zoomcam .drift{transform:scale(calc(1 + var(--zp,0) * .06))}
+
+/* --- fx primitives: JS writes --p (0→1, eased) per element --- */
+[data-fx]{--p:0}
+[data-fx="fade"]{opacity:var(--p)}
+[data-fx="up"]{opacity:var(--p);transform:translateY(calc((1 - var(--p)) * 44px))}
+[data-fx="down"]{opacity:var(--p);transform:translateY(calc((1 - var(--p)) * -44px))}
+[data-fx="pop"]{opacity:min(1, calc(var(--p) * 2));transform:scale(calc(.55 + var(--p) * .45))}
+[data-fx="zoom"]{opacity:var(--p);transform:scale(calc(1.18 - var(--p) * .18));filter:blur(calc((1 - var(--p)) * 10px))}
+[data-fx="blur"]{opacity:var(--p);filter:blur(calc((1 - var(--p)) * 14px));transform:translateY(calc((1 - var(--p)) * 24px))}
+[data-fx="word"]{display:inline-block;opacity:var(--p);transform:translateY(calc((1 - var(--p)) * .45em)) rotate(calc((1 - var(--p)) * -5deg));filter:blur(calc((1 - var(--p)) * 8px))}
+[data-fx="title"]{opacity:var(--p);transform:translateY(calc((1 - var(--p)) * 40px))}
+[data-fx="growy"]{transform-box:fill-box;transform-origin:50% 100%;transform:scaleY(var(--p))}
+[data-fx="growx"]{transform-box:fill-box;transform-origin:100% 50%;transform:scaleX(var(--p))}
+[data-fx="drop"]{opacity:min(1, calc(var(--p) * 3));transform:translateY(calc((1 - var(--p)) * -340px))}
+[data-fx="left"]{opacity:var(--p);transform:translateX(calc((1 - var(--p)) * -60px))}
+
+/* --- shared stage furniture --- */
+.brandbar{position:absolute;top:46px;right:70px;left:70px;display:flex;justify-content:space-between;align-items:center;opacity:var(--bb,0);z-index:4}
+.brandbar .bm{display:flex;align-items:center;gap:14px;font-weight:800;font-size:28px}
+.brandbar .bm svg{width:52px;height:52px}
+.brandbar .chap{font-size:24px;color:var(--s-muted);font-weight:500;font-variant-numeric:tabular-nums}
+.brandbar .chap b{color:var(--s-caramel);font-weight:800}
+.subs{position:absolute;bottom:58px;left:0;right:0;display:flex;justify-content:center;z-index:6;pointer-events:none}
+.subs span{max-width:1380px;background:rgba(255,253,249,.88);backdrop-filter:blur(10px);border:1px solid rgba(234,219,198,.9);box-shadow:0 18px 40px -22px rgba(90,50,20,.35);border-radius:22px;padding:14px 34px;font-size:40px;font-weight:600;line-height:1.55;text-align:center;opacity:var(--so,0);transform:translateY(calc((1 - var(--so,0)) * 14px))}
+.stage.nocc .subs{display:none}
+
+.kicker{display:inline-block;background:var(--s-soft);color:var(--s-caramel-dk);font-weight:700;font-size:26px;padding:8px 24px;border-radius:999px;letter-spacing:.01em}
+.h2{font-size:84px;font-weight:800;line-height:1.2;margin:18px 0 0;text-wrap:balance}
+.h2 em{font-style:normal;color:var(--s-caramel)}
+.lead{font-size:34px;line-height:1.7;color:var(--s-muted);margin:14px 0 0;font-weight:400}
+.ico{fill:none;stroke:var(--s-caramel-dk);stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+
+/* S1 / S11 title */
+.title-wrap{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.logo-cookie{width:150px;height:150px;filter:drop-shadow(0 16px 20px rgba(120,66,24,.25))}
+.eyebrow{font-size:26px;font-weight:600;color:var(--s-caramel-dk);letter-spacing:.04em;margin-top:26px}
+.t-ar{margin:6px 0 0;font-size:150px;font-weight:900;line-height:1.25;color:var(--s-ink);filter:drop-shadow(0 18px 20px rgba(120,66,24,.2));background:linear-gradient(180deg,#4A2C1D 30%,#7A4527);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;padding:0 20px}
+.t-en{font-family:var(--latin);font-style:italic;font-size:54px;color:var(--s-caramel);margin-top:4px;direction:ltr;letter-spacing:.01em}
+.t-rule{width:520px;height:30px;margin-top:-6px;overflow:visible}
+.title-shadow{width:900px;height:70px;margin-top:-34px;border-radius:50%;background:radial-gradient(closest-side,rgba(110,62,26,.55),rgba(110,62,26,0));filter:blur(14px);opacity:calc(var(--p) * .55);transform:scaleX(calc(1.3 - var(--p) * .3))}
+.tagline{font-size:56px;font-weight:300;color:var(--s-ink);margin-top:20px}
+.tagline b{font-weight:800;color:var(--s-caramel)}
+.cta{margin-top:40px;display:flex;gap:22px;align-items:center}
+.cta .pill{background:var(--s-ink);color:var(--s-bg);font-weight:800;font-size:38px;padding:18px 48px;border-radius:999px;box-shadow:0 22px 40px -20px rgba(59,36,24,.6)}
+.cta small{font-size:28px;color:var(--s-muted)}
+
+/* S2 kinetic type */
+.kt{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding-bottom:80px}
+.kt-small{font-size:58px;font-weight:400;color:var(--s-muted)}
+.kt-big{font-size:210px;font-weight:900;line-height:1.15;color:var(--s-ink);display:flex;align-items:center;gap:40px}
+.kt-heart{width:150px;height:150px}
+.kt-and{position:relative;font-size:170px;font-weight:300;color:var(--s-caramel);line-height:1.1}
+.kt-and svg{position:absolute;left:-30px;right:-30px;bottom:-34px;width:calc(100% + 60px);height:60px;overflow:visible}
+.spark{position:absolute;width:56px;height:56px;fill:var(--s-gold)}
+
+/* S3 ingredient icons */
+.head{position:absolute;top:150px;right:150px;left:150px}
+.head.c{text-align:center}
+.tiles{position:absolute;top:450px;left:0;right:0;display:flex;justify-content:center;gap:36px}
+.tile{width:370px;text-align:center}
+.tile .disc{position:relative;width:230px;height:230px;margin:0 auto;border-radius:50%;background:var(--s-milk);border:2px solid var(--s-line);display:grid;place-items:center;box-shadow:0 30px 50px -34px rgba(120,66,24,.45)}
+.tile .disc svg.ico{width:120px;height:120px}
+.tile .chk{position:absolute;top:10px;left:14px;width:58px;height:58px;border-radius:50%;background:var(--s-mint);display:grid;place-items:center;box-shadow:0 0 0 6px var(--s-bg)}
+.tile .chk svg{width:30px;height:30px;fill:none;stroke:#fff;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+.tile h3{font-size:40px;font-weight:800;margin:30px 0 0;white-space:nowrap}
+.tile p{font-size:28px;color:var(--s-muted);margin:6px 0 0}
+
+/* S4 callouts */
+.hero-cookie{position:absolute;width:560px;height:560px;left:680px;top:240px}
+.hero-cookie svg{width:100%;height:100%;filter:drop-shadow(0 40px 40px rgba(120,66,24,.3));transform:rotate(calc(var(--lt,0) * 5deg))}
+.leaders{position:absolute;inset:0;width:1920px;height:1080px;overflow:visible}
+.leaders path{fill:none;stroke:var(--s-ink);stroke-width:3;stroke-linecap:round}
+.leaders circle{fill:var(--s-ink)}
+.co{position:absolute;display:flex;align-items:center;gap:20px;background:var(--s-milk);border:2px solid var(--s-line);border-radius:26px;padding:20px 30px 20px 34px;box-shadow:0 26px 50px -30px rgba(90,50,20,.5)}
+.co .x{width:56px;height:56px;border-radius:50%;background:#F7E0D9;display:grid;place-items:center;flex:none}
+.co .x svg{width:26px;height:26px;stroke:var(--s-berry);stroke-width:5;stroke-linecap:round;fill:none}
+.co b{font-size:36px;font-weight:800;white-space:nowrap}
+.seal{position:absolute;left:300px;top:640px;width:230px;height:230px}
+.seal svg{width:100%;height:100%;transform:rotate(calc(var(--lt,0) * -8deg))}
+
+/* S5 process */
+.track{position:absolute;inset:0;width:1920px;height:1080px}
+.node{position:absolute;top:470px;width:300px;margin-right:-150px;text-align:center}
+.node .disc{width:180px;height:180px;margin:0 auto;border-radius:50%;background:var(--s-milk);border:3px solid var(--s-gold);display:grid;place-items:center;position:relative;box-shadow:0 26px 40px -28px rgba(120,66,24,.55)}
+.node .disc svg.ico{width:96px;height:96px}
+.node .num{position:absolute;top:-8px;right:-4px;width:52px;height:52px;border-radius:50%;background:var(--s-ink);color:var(--s-bg);font-size:26px;font-weight:800;display:grid;place-items:center}
+.node h3{font-size:38px;font-weight:800;margin:26px 0 0}
+.node p{font-size:26px;color:var(--s-muted);margin:4px 0 0;font-variant-numeric:tabular-nums}
+.token{position:absolute;top:525px;width:70px;height:70px;margin-right:-35px;right:calc(1920px - 1640px + var(--p) * 1360px)}
+.token svg{width:100%;height:100%;transform:rotate(calc(var(--p) * -720deg))}
+
+/* S6 chart */
+.chart-copy{position:absolute;top:300px;right:150px;width:700px}
+.chart{position:absolute;top:210px;left:110px;width:900px;height:680px}
+.chart text{font-family:var(--display)}
+.delta{position:absolute;top:840px;right:150px;display:flex;align-items:center;gap:18px;font-size:32px;font-weight:600}
+.delta i{width:50px;height:50px;border-radius:50%;background:var(--s-mint);display:grid;place-items:center}
+.delta i svg{width:26px;height:26px;fill:none;stroke:#fff;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+
+/* S7 infographic */
+.bag{position:absolute;top:200px;right:190px;width:440px;height:506px}
+.bag-cap{position:absolute;top:730px;right:150px;width:520px;text-align:center;font-size:32px;font-weight:700}
+.bag-cap small{display:block;font-size:26px;color:var(--s-muted);font-weight:400}
+.energy{position:absolute;top:220px;left:150px;width:900px}
+.battery{width:820px;height:300px;margin-top:30px}
+.stats{display:flex;gap:24px;margin-top:34px}
+.stat{flex:1;background:var(--s-milk);border:2px solid var(--s-line);border-radius:26px;padding:22px 26px}
+.stat b{display:block;font-size:64px;font-weight:900;color:var(--s-caramel);line-height:1.2;font-variant-numeric:tabular-nums}
+.stat span{font-size:28px;color:var(--s-muted)}
+.foot{font-size:22px;color:var(--s-muted);margin-top:18px}
+
+/* S8 timeline */
+.ms{position:absolute;top:400px;width:380px;margin-right:-190px;text-align:center}
+.ms .yr{font-size:76px;font-weight:900;color:var(--s-caramel);line-height:1;font-variant-numeric:tabular-nums}
+.ms .dot{width:40px;height:40px;border-radius:50%;margin:52px auto 0;background:var(--s-bg);border:8px solid var(--s-ink)}
+.ms .card{margin-top:34px;background:var(--s-milk);border:2px solid var(--s-line);border-radius:26px;padding:24px 22px;display:flex;flex-direction:column;align-items:center;gap:10px;box-shadow:0 26px 50px -34px rgba(90,50,20,.5)}
+.ms .card svg.ico{width:70px;height:70px}
+.ms .card b{font-size:32px;font-weight:700;line-height:1.45}
+.ms.now .dot{background:var(--s-caramel);border-color:var(--s-caramel);box-shadow:0 0 0 12px rgba(194,122,54,.18)}
+.ms.now .card{background:var(--s-ink);border-color:var(--s-ink);color:var(--s-bg)}
+.ms.now .card .ico{stroke:var(--s-gold)}
+.ms.now .card b span{color:var(--s-gold);font-size:46px;font-weight:900;display:block;font-variant-numeric:tabular-nums}
+
+/* S9 products */
+.packs{position:absolute;top:360px;left:0;right:0;display:flex;justify-content:center;gap:90px}
+.packw{width:340px}
+.pack{position:relative;height:470px;transform:translateY(calc(var(--hl,0) * -26px)) scale(calc(1 + var(--hl,0) * .05));opacity:calc(.72 + var(--hl,0) * .28 + var(--done,0) * .28)}
+.pack .glow{position:absolute;inset:-80px -60px;border-radius:50%;background:radial-gradient(closest-side,rgba(231,177,95,.55),rgba(231,177,95,0));opacity:var(--hl,0)}
+.pack .body{position:absolute;inset:110px 0 0;border-radius:40px;background:var(--pc);box-shadow:0 40px 60px -36px rgba(60,30,10,.6);overflow:hidden;color:#FFF8EF;text-align:center;padding:150px 24px 0}
+.pack .body::before{content:"";position:absolute;top:0;left:0;right:0;height:26px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.22) 0 10px,transparent 10px 20px)}
+.pack .body .wm{font-size:28px;font-weight:800;letter-spacing:.02em;opacity:.85}
+.pack .body h3{font-size:46px;font-weight:900;margin:6px 0 0;line-height:1.25}
+.pack .body p{font-size:24px;opacity:.85;margin:10px 0 0;font-variant-numeric:tabular-nums}
+.pack .ck{position:absolute;top:0;left:50%;width:240px;height:240px;margin-left:-120px;filter:drop-shadow(0 22px 22px rgba(60,30,10,.35))}
+
+/* S10 pictogram */
+.big-stat{position:absolute;top:250px;right:170px;width:760px}
+.big-stat .n{font-size:270px;font-weight:900;color:var(--s-caramel);line-height:1;font-variant-numeric:tabular-nums}
+.big-stat h3{font-size:56px;font-weight:800;line-height:1.35;margin:20px 0 0;text-wrap:balance}
+.big-stat p{font-size:26px;color:var(--s-muted);margin:20px 0 0}
+.grid100{position:absolute;top:190px;left:190px;display:grid;grid-template-columns:repeat(10,58px);gap:9px}
+.grid100 .c{width:58px;height:58px}
+.grid100 .c svg{width:100%;height:100%}
+.grid100 .c.empty span{display:block;width:100%;height:100%;border-radius:50%;border:3px dashed var(--s-tan)}
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="page-head">
+    <h1>كيفن للكوكيز <span>Kevin Cookie Company</span></h1>
+    <p>فيلم موشن جرافيك تعريفي مدته دقيقة ونص، بالعامية المصرية للأهالي. كل مشهد بيظهر مع جملة التعليق بتاعته.</p>
+  </header>
+
+  <section class="player" id="player" aria-label="مشغل الفيلم">
+    <div class="viewport" id="viewport">
+      <div class="stage" id="stage" aria-hidden="true">
+        <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+          <defs id="defs">
+            <linearGradient id="chipG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6A3E28"/><stop offset="1" stop-color="#2A160D"/></linearGradient>
+            <linearGradient id="barG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E7B15F"/><stop offset="1" stop-color="#C27A36"/></linearGradient>
+            <linearGradient id="ruleG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E7B15F" stop-opacity="0"/><stop offset=".5" stop-color="#C27A36"/><stop offset="1" stop-color="#E7B15F" stop-opacity="0"/></linearGradient>
+          </defs>
+        </svg>
+
+        <div class="bg-blob b1" id="blob1"></div>
+        <div class="bg-blob b2" id="blob2"></div>
+        <div class="grain" id="grain"></div>
+        <canvas class="chips" id="chipsBack" width="1920" height="1080"></canvas>
+
+        <!-- ============ S1 · Title ============ -->
+        <section class="scene zoomcam" data-start="0" data-end="7.5" data-tr="none" data-name="المقدمة" data-chips="1">
+          <div class="cam"><div class="drift">
+            <div class="title-wrap">
+              <div data-fx="pop" data-at="0.2" data-dur="1.2"><svg class="logo-cookie" viewBox="0 0 220 220"><use href="#ck-choc"/></svg></div>
+              <div data-fx="title" data-at="0.3" data-dur="2">
+                <div class="eyebrow">من مطبخ مصري · من سنة ٢٠١٨</div>
+                <h1 class="t-ar">شركة كيفن للكوكيز</h1>
+                <div class="t-en">Kevin Cookie Company</div>
+              </div>
+              <div class="title-shadow" data-fx="shadow" data-at="0.3" data-dur="2"></div>
+              <svg class="t-rule" viewBox="0 0 520 30"><path data-fx="draw" data-at="1.5" data-dur="1.4" d="M10 15 H510" stroke="url(#ruleG)" stroke-width="3" fill="none" stroke-linecap="round"/></svg>
+            </div>
+          </div></div>
+        </section>
+
+        <!-- ============ S2 · Animated typography ============ -->
+        <section class="scene" data-start="7.5" data-end="14.5" data-tr="rise" data-name="ولادكم أولاً">
+          <div class="cam"><div class="drift">
+            <div class="kt">
+              <div class="kt-small" data-fx="up" data-at="0.3">إحنا عارفين إن أهم حاجة عندكم</div>
+              <div class="kt-big">
+                <span data-fx="word" data-at="1.5">صحة</span>
+                <span data-fx="word" data-at="1.95">ولادكم</span>
+                <span data-fx="pop" data-at="2.4"><svg class="kt-heart" viewBox="0 0 64 64"><path d="M32 56S6 41 6 23a13 13 0 0 1 26-5 13 13 0 0 1 26 5c0 18-26 33-26 33z" fill="#C27A36"/><path d="M18 22a6 6 0 0 1 6-6" stroke="#FBE3C2" stroke-width="3" fill="none" stroke-linecap="round"/></svg></span>
+              </div>
+              <div class="kt-and"><span data-fx="blur" data-at="3.8">وفرحتهم</span>
+                <svg viewBox="0 0 600 60" preserveAspectRatio="none"><path data-fx="draw" data-at="4.4" data-dur="1" d="M590 30 C 440 6, 300 54, 150 26 S 30 22, 10 40" stroke="#E7B15F" stroke-width="10" fill="none" stroke-linecap="round"/></svg>
+              </div>
+            </div>
+            <svg class="spark" style="top:250px;right:420px" data-fx="pop" data-at="4.7" viewBox="0 0 24 24"><path d="M12 0l2.6 9.4L24 12l-9.4 2.6L12 24l-2.6-9.4L0 12l9.4-2.6z"/></svg>
+            <svg class="spark" style="top:700px;left:430px;width:40px;height:40px" data-fx="pop" data-at="4.95" viewBox="0 0 24 24"><path d="M12 0l2.6 9.4L24 12l-9.4 2.6L12 24l-2.6-9.4L0 12l9.4-2.6z"/></svg>
+            <svg class="spark" style="top:330px;left:520px;width:32px;height:32px" data-fx="pop" data-at="5.2" viewBox="0 0 24 24"><path d="M12 0l2.6 9.4L24 12l-9.4 2.6L12 24l-2.6-9.4L0 12l9.4-2.6z"/></svg>
+          </div></div>
+        </section>
+
+        <!-- ============ S3 · Icons ============ -->
+        <section class="scene" data-start="14.5" data-end="23.5" data-tr="slide" data-name="المكونات">
+          <div class="cam"><div class="drift">
+            <div class="head c">
+              <div data-fx="up" data-at="0.3"><span class="kicker">المكونات</span></div>
+              <div class="h2" data-fx="up" data-at="0.55">مكونات طبيعية <em data-fx="count" data-at="0.9" data-dur="2" data-to="100" data-suffix="٪">١٠٠٪</em></div>
+            </div>
+            <div class="tiles">
+              <div class="tile" data-fx="pop" data-at="4.1">
+                <div class="disc">
+                  <svg class="ico" viewBox="0 0 64 64" data-fx="draw" data-at="4.2" data-dur="1.1"><path d="M32 60V12"/><path d="M32 22c-7-1-10-6-10-11 6 0 10 4 10 11z"/><path d="M32 22c7-1 10-6 10-11-6 0-10 4-10 11z"/><path d="M32 34c-7-1-10-6-10-11 6 0 10 4 10 11z"/><path d="M32 34c7-1 10-6 10-11-6 0-10 4-10 11z"/><path d="M32 46c-7-1-10-6-10-11 6 0 10 4 10 11z"/><path d="M32 46c7-1 10-6 10-11-6 0-10 4-10 11z"/></svg>
+                  <span class="chk" data-fx="pop" data-at="4.8"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></span>
+                </div>
+                <h3>دقيق قمح كامل</h3><p>ألياف أكتر</p>
+              </div>
+              <div class="tile" data-fx="pop" data-at="5.1">
+                <div class="disc">
+                  <svg class="ico" viewBox="0 0 64 64" data-fx="draw" data-at="5.2" data-dur="1.1"><path d="M6 38l18-12h34l-18 12z"/><path d="M6 38v12h34V38"/><path d="M40 50l18-12V26"/><path d="M16 32h14"/></svg>
+                  <span class="chk" data-fx="pop" data-at="5.8"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></span>
+                </div>
+                <h3>زبدة طبيعية</h3><p>مش مارجرين</p>
+              </div>
+              <div class="tile" data-fx="pop" data-at="6.1">
+                <div class="disc">
+                  <svg class="ico" viewBox="0 0 64 64" data-fx="draw" data-at="6.2" data-dur="1.1"><path d="M32 6c10 0 19 17 19 30a19 19 0 0 1-38 0C13 23 22 6 32 6z"/><path d="M23 32c0-7 3-12 7-15"/></svg>
+                  <span class="chk" data-fx="pop" data-at="6.8"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></span>
+                </div>
+                <h3>بيض بلدي</h3><p>طازة كل يوم</p>
+              </div>
+              <div class="tile" data-fx="pop" data-at="7">
+                <div class="disc">
+                  <svg class="ico" viewBox="0 0 64 64" data-fx="draw" data-at="7.1" data-dur="1.1"><path d="M16 8h32a4 4 0 0 1 4 4v40a4 4 0 0 1-4 4H16a4 4 0 0 1-4-4V12a4 4 0 0 1 4-4z"/><path d="M12 24h40M12 40h40M32 8v48"/></svg>
+                  <span class="chk" data-fx="pop" data-at="7.7"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></span>
+                </div>
+                <h3>شوكولاتة حقيقية</h3><p>كاكاو ٥٤٪</p>
+              </div>
+            </div>
+          </div></div>
+        </section>
+
+        <!-- ============ S4 · Callouts ============ -->
+        <section class="scene" data-start="23.5" data-end="31" data-tr="blur" data-name="من غير إضافات">
+          <div class="cam"><div class="drift">
+            <div class="hero-cookie" data-fx="zoom" data-at="0" data-dur="1.3"><svg viewBox="0 0 220 220"><use href="#ck-choc"/></svg></div>
+            <svg class="leaders" viewBox="0 0 1920 1080">
+              <circle cx="1150" cy="370" r="9" data-fx="pop" data-at="0.5"/>
+              <path data-fx="draw" data-at="0.55" data-dur=".7" d="M1150 370 L1260 250 H1370"/>
+              <circle cx="700" cy="540" r="9" data-fx="pop" data-at="1.9"/>
+              <path data-fx="draw" data-at="1.95" data-dur=".7" d="M700 540 L620 450 H560"/>
+              <circle cx="1150" cy="710" r="9" data-fx="pop" data-at="3.3"/>
+              <path data-fx="draw" data-at="3.35" data-dur=".7" d="M1150 710 L1260 830 H1370"/>
+            </svg>
+            <div class="co" style="top:202px;left:1374px" data-fx="left" data-at="1"><span class="x"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></span><b>بدون مواد حافظة</b></div>
+            <div class="co" style="top:402px;right:1364px" data-fx="up" data-at="2.4"><span class="x"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></span><b>بدون ألوان صناعية</b></div>
+            <div class="co" style="top:782px;left:1374px" data-fx="left" data-at="3.8"><span class="x"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></span><b>بدون نكهات مُصنّعة</b></div>
+            <div class="seal" data-fx="pop" data-at="5" data-dur=".9">
+              <svg viewBox="0 0 200 200">
+                <defs><path id="sealArc" d="M100 100 m-72 0 a72 72 0 1 1 144 0 a72 72 0 1 1 -144 0"/></defs>
+                <circle cx="100" cy="100" r="96" fill="#3B2418"/>
+                <circle cx="100" cy="100" r="86" fill="none" stroke="#E7B15F" stroke-width="2" stroke-dasharray="3 6"/>
+                <text font-size="17" font-weight="700" fill="#E7B15F" letter-spacing="1"><textPath href="#sealArc">طبيعي ١٠٠٪ · طبيعي ١٠٠٪ · طبيعي ١٠٠٪ ·</textPath></text>
+                <text x="100" y="96" text-anchor="middle" font-size="40" font-weight="900" fill="#FFF8EF">١٠٠٪</text>
+                <text x="100" y="128" text-anchor="middle" font-size="22" font-weight="600" fill="#E7B15F">طبيعي</text>
+              </svg>
+            </div>
+          </div></div>
+        </section>
+
+        <!-- ============ S5 · Process diagram ============ -->
+        <section class="scene" data-start="31" data-end="41" data-tr="fade" data-name="رحلة الخَبز">
+          <div class="cam"><div class="drift">
+            <div class="head c">
+              <div data-fx="up" data-at="0.3"><span class="kicker">كل يوم من الساعة ٦ الصبح</span></div>
+              <div class="h2" data-fx="up" data-at="0.55">من الفرن <em>لباب البيت</em></div>
+            </div>
+            <svg class="track" viewBox="0 0 1920 1080">
+              <path d="M1640 560 H280" stroke="#EADBC6" stroke-width="6" stroke-dasharray="2 16" stroke-linecap="round" fill="none"/>
+              <path data-fx="draw" data-at="3.6" data-dur="4.6" data-ease="lin" d="M1640 560 H280" stroke="#C27A36" stroke-width="6" stroke-linecap="round" fill="none"/>
+            </svg>
+            <div class="token" data-fx="travel" data-at="3.6" data-dur="4.6" data-ease="lin"><svg viewBox="0 0 220 220"><use href="#ck-choc"/></svg></div>
+            <div class="node" style="right:280px" data-fx="pop" data-at="3.6">
+              <div class="disc"><span class="num">١</span><svg class="ico" viewBox="0 0 64 64" data-fx="draw" data-at="3.7"><circle cx="27" cy="27" r="17"/><path d="M40 40l15 15"/><path d="M20 27l5 5 9-10"/></svg></div>
+              <h3>نختار المكونات</h3><p>فرز بالإيد</p>
+            </div>
+            <div class="node" style="right:620px" data-fx="pop" data-at="4.75">
+              <div class="disc"><span class="num">٢</span><svg class="ico" viewBox="0 0 64 64" data-fx="draw" data-at="4.85"><path d="M6 30h52a26 22 0 0 1-52 0z"/><path d="M38 30l12-22"/><path d="M45 10c3-3 9 0 7 5l-4 6"/></svg></div>
+              <h3>نعجن</h3><p>عجينة طازة</p>
+            </div>
+            <div class="node" style="right:960px" data-fx="pop" data-at="5.9">
+              <div class="disc"><span class="num">٣</span><svg class="ico" viewBox="0 0 64 64" data-fx="draw" data-at="6"><rect x="8" y="10" width="48" height="44" rx="6"/><rect x="15" y="24" width="34" height="22" rx="3"/><path d="M16 17h4M26 17h4M44 17h4"/><path d="M24 41c2-3-2-5 0-8M32 41c2-3-2-5 0-8M40 41c2-3-2-5 0-8"/></svg></div>
+              <h3>نخبز</h3><p>١٨٠° · ١٢ دقيقة</p>
+            </div>
+            <div class="node" style="right:1300px" data-fx="pop" data-at="7.05">
+              <div class="disc"><span class="num">٤</span><svg class="ico" viewBox="0 0 64 64" data-fx="draw" data-at="7.15"><path d="M8 22l24-12 24 12-24 12z"/><path d="M8 22v22l24 12 24-12V22"/><path d="M32 34v22"/><path d="M20 16l24 12"/></svg></div>
+              <h3>نغلّف</h3><p>عبوة محكمة</p>
+            </div>
+            <div class="node" style="right:1640px" data-fx="pop" data-at="8.2">
+              <div class="disc"><span class="num">٥</span><svg class="ico" viewBox="0 0 64 64" data-fx="draw" data-at="8.3"><circle cx="16" cy="48" r="7"/><circle cx="50" cy="48" r="7"/><path d="M23 48h18l7-16h-9"/><path d="M48 32l2 9"/><rect x="8" y="22" width="18" height="16" rx="3"/></svg></div>
+              <h3>نوصّل</h3><p>في نفس اليوم</p>
+            </div>
+          </div></div>
+        </section>
+
+        <!-- ============ S6 · Chart ============ -->
+        <section class="scene" data-start="41" data-end="48.5" data-tr="slide" data-name="سكر أقل">
+          <div class="cam"><div class="drift">
+            <div class="chart-copy">
+              <div data-fx="up" data-at="0.3"><span class="kicker">السكر في القطعة</span></div>
+              <div class="h2" data-fx="up" data-at="0.55">سكر أقل بـ<em data-fx="count" data-at="1.7" data-dur="1.6" data-to="30" data-suffix="٪">٣٠٪</em></div>
+              <p class="lead" data-fx="up" data-at="0.8">مقارنة بقطعة كوكيز عادية بنفس الحجم (٣٠ جم).</p>
+            </div>
+            <svg class="chart" viewBox="0 0 820 620" direction="ltr">
+              <g font-size="22" fill="#8A6B57" text-anchor="middle" data-fx="fade" data-at="0.3">
+                <path d="M40 520H720M40 400H720M40 280H720M40 160H720" stroke="#EADBC6" stroke-width="2"/>
+                <text x="770" y="528">٠</text><text x="770" y="408">٤</text><text x="770" y="288">٨</text><text x="770" y="168">١٢</text>
+                <text x="770" y="128" font-size="20">جرام</text>
+              </g>
+              <rect x="420" y="160" width="180" height="360" rx="14" fill="#E2CDB0" data-fx="growy" data-at="0.8" data-dur="1.2"/>
+              <rect x="140" y="268" width="180" height="252" rx="14" fill="url(#barG)" data-fx="growy" data-at="1.7" data-dur="1.2"/>
+              <path d="M40 520H720" stroke="#3B2418" stroke-width="3"/>
+              <text x="510" y="140" text-anchor="middle" font-size="40" font-weight="800" fill="#8A6B57" data-fx="count" data-at="0.8" data-dur="1.2" data-to="12" data-suffix=" جم">١٢ جم</text>
+              <text x="230" y="320" text-anchor="middle" font-size="40" font-weight="800" fill="#FFFDF9" data-fx="count" data-at="1.9" data-dur="1.2" data-to="8.4" data-dec="1" data-suffix=" جم">٨٫٤ جم</text>
+              <text x="510" y="570" text-anchor="middle" font-size="30" font-weight="600" fill="#8A6B57">كوكيز عادية</text>
+              <text x="230" y="570" text-anchor="middle" font-size="30" font-weight="800" fill="#3B2418">كوكيز كيفن</text>
+              <g data-fx="fade" data-at="3">
+                <path d="M420 160H150" stroke="#B9503C" stroke-width="3" stroke-dasharray="8 8"/>
+              </g>
+              <path data-fx="draw" data-at="3.1" data-dur=".8" d="M110 166V262" stroke="#B9503C" stroke-width="4" fill="none"/>
+              <path data-fx="fade" data-at="3.7" d="M98 248l12 16 12-16" stroke="#B9503C" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <g data-fx="pop" data-at="3.5" style="transform-box:fill-box;transform-origin:center">
+                <rect x="20" y="192" width="74" height="44" rx="22" fill="#B9503C"/>
+                <text x="57" y="222" text-anchor="middle" font-size="24" font-weight="800" fill="#FFF8EF">−٣٠٪</text>
+              </g>
+            </svg>
+            <div class="delta" data-fx="up" data-at="4.4"><i><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></i>والطعم زي ما ولادكم بيحبوه بالظبط</div>
+          </div></div>
+        </section>
+
+        <!-- ============ S7 · Infographic ============ -->
+        <section class="scene" data-start="48.5" data-end="56.5" data-tr="iris" data-name="طاقة الفُسحة">
+          <div class="cam"><div class="drift">
+            <svg class="bag" viewBox="0 0 400 460" data-fx="up" data-at="0.2">
+              <path d="M140 92V64a60 60 0 0 1 120 0v28" stroke="#9C5B2B" stroke-width="18" fill="none" stroke-linecap="round"/>
+              <rect x="40" y="80" width="320" height="370" rx="64" fill="#E9B76F"/>
+              <rect x="300" y="110" width="40" height="320" rx="20" fill="#D9A15A" opacity=".6"/>
+              <path d="M40 176V144a64 64 0 0 1 64-64h192a64 64 0 0 1 64 64v32z" fill="#D99A4E"/>
+              <rect x="186" y="150" width="28" height="44" rx="8" fill="#7A4325"/>
+              <g data-fx="drop" data-at="1" data-dur="1">
+                <rect x="138" y="150" width="124" height="170" rx="18" fill="#4A2C1D"/>
+                <rect x="138" y="150" width="124" height="14" rx="7" fill="#6A3E28"/>
+                <svg x="165" y="170" width="70" height="70" viewBox="0 0 220 220"><use href="#ck-choc"/></svg>
+              </g>
+              <rect x="80" y="250" width="240" height="170" rx="40" fill="#F3CF92"/>
+              <path d="M104 280H296" stroke="#C98B45" stroke-width="4" stroke-dasharray="10 7" stroke-linecap="round"/>
+            </svg>
+            <div class="bag-cap" data-fx="up" data-at="1.8">قطعة ٣٠ جم<small>على قد شنطة المدرسة</small></div>
+
+            <div class="energy">
+              <div data-fx="up" data-at="0.4"><span class="kicker">طاقة الفُسحة</span></div>
+              <svg class="battery" viewBox="0 0 640 240" data-fx="fade" data-at="0.6">
+                <rect x="44" y="12" width="584" height="216" rx="40" fill="#FFFDF9" stroke="#3B2418" stroke-width="8"/>
+                <rect x="8" y="80" width="36" height="80" rx="12" fill="#3B2418"/>
+                <g fill="url(#barG)">
+                  <rect x="504" y="36" width="100" height="168" rx="18" data-fx="growx" data-at="3.5" data-dur=".45"/>
+                  <rect x="396" y="36" width="100" height="168" rx="18" data-fx="growx" data-at="3.85" data-dur=".45"/>
+                  <rect x="288" y="36" width="100" height="168" rx="18" data-fx="growx" data-at="4.2" data-dur=".45"/>
+                  <rect x="180" y="36" width="100" height="168" rx="18" data-fx="growx" data-at="4.55" data-dur=".45"/>
+                  <rect x="72" y="36" width="100" height="168" rx="18" data-fx="growx" data-at="4.9" data-dur=".45"/>
+                </g>
+                <path data-fx="pop" data-at="5.3" style="transform-box:fill-box;transform-origin:center" d="M346 46l-56 84h44l-14 64 58-90h-46z" fill="#FFFDF9" stroke="#3B2418" stroke-width="6" stroke-linejoin="round"/>
+              </svg>
+              <div class="stats">
+                <div class="stat" data-fx="up" data-at="5.6"><b data-fx="count" data-at="5.6" data-dur="1.2" data-to="120">١٢٠</b><span>سعر حراري</span></div>
+                <div class="stat" data-fx="up" data-at="5.9"><b data-fx="count" data-at="5.9" data-dur="1" data-to="3" data-suffix=" جم">٣ جم</b><span>ألياف</span></div>
+                <div class="stat" data-fx="up" data-at="6.2"><b data-fx="count" data-at="6.2" data-dur="1" data-to="3" data-suffix=" جم">٣ جم</b><span>بروتين</span></div>
+              </div>
+              <div class="foot" data-fx="fade" data-at="6.6">لكل قطعة ٣٠ جم · قيم تقريبية</div>
+            </div>
+          </div></div>
+        </section>
+
+        <!-- ============ S8 · Timeline ============ -->
+        <section class="scene" data-start="56.5" data-end="66" data-tr="rise" data-name="حكايتنا">
+          <div class="cam"><div class="drift">
+            <div class="head c" style="top:130px">
+              <div data-fx="up" data-at="0.2"><span class="kicker">حكايتنا</span></div>
+              <div class="h2" data-fx="up" data-at="0.4" style="font-size:72px">٨ سنين من الخَبز</div>
+            </div>
+            <svg class="track" viewBox="0 0 1920 1080">
+              <path d="M1720 548 H200" stroke="#EADBC6" stroke-width="6" stroke-linecap="round" fill="none"/>
+              <path data-fx="draw" data-at="0.3" data-dur="5" data-ease="lin" d="M1720 548 H200" stroke="#3B2418" stroke-width="6" stroke-linecap="round" fill="none"/>
+            </svg>
+            <div class="ms" style="right:320px" data-fx="up" data-at="0.7">
+              <div class="yr">٢٠١٨</div><div class="dot"></div>
+              <div class="card"><svg class="ico" viewBox="0 0 64 64"><path d="M18 42h28v14H18z"/><path d="M18 42c-8 0-10-12-2-14 0-8 10-12 16-6 6-6 16-2 16 6 8 2 6 14-2 14"/></svg><b>مطبخ صغير في مصر الجديدة</b></div>
+            </div>
+            <div class="ms" style="right:770px" data-fx="up" data-at="2.2">
+              <div class="yr">٢٠٢٠</div><div class="dot"></div>
+              <div class="card"><svg class="ico" viewBox="0 0 64 64"><path d="M8 26h48l-4-14H12z"/><path d="M12 26v28h40V26"/><rect x="26" y="38" width="12" height="16"/></svg><b>أول فرع لينا</b></div>
+            </div>
+            <div class="ms" style="right:1220px" data-fx="up" data-at="3.65">
+              <div class="yr">٢٠٢٣</div><div class="dot"></div>
+              <div class="card"><svg class="ico" viewBox="0 0 64 64"><path d="M32 58s18-18 18-32a18 18 0 0 0-36 0c0 14 18 32 18 32z"/><circle cx="32" cy="26" r="6"/></svg><b>توصيل لكل القاهرة الكبرى</b></div>
+            </div>
+            <div class="ms now" style="right:1670px" data-fx="up" data-at="5.1">
+              <div class="yr">٢٠٢٦</div><div class="dot"></div>
+              <div class="card"><svg class="ico" viewBox="0 0 64 64"><circle cx="22" cy="18" r="7"/><circle cx="44" cy="22" r="5"/><path d="M8 54c0-10 6-18 14-18s14 8 14 18"/><path d="M34 54c0-8 4-14 10-14s10 6 10 14"/></svg><b>أكتر من<span data-fx="count" data-at="5.2" data-dur="1.6" data-to="50000">٥٠٬٠٠٠</span>بيت في مصر</b></div>
+            </div>
+          </div></div>
+        </section>
+
+        <!-- ============ S9 · Product visuals ============ -->
+        <section class="scene" data-start="66" data-end="74" data-tr="fade" data-name="النكهات">
+          <div class="cam"><div class="drift">
+            <div class="head c" style="top:120px">
+              <div data-fx="up" data-at="0.2"><span class="kicker">نكهاتنا</span></div>
+              <div class="h2" data-fx="up" data-at="0.45" style="font-size:72px">تلات نكهات… <em>والاختيار لولادكم</em></div>
+            </div>
+            <div class="packs">
+              <div class="packw" data-fx="up" data-at="0.9">
+                <div class="pack" data-hl="3.4,4.8" data-done="7.3" style="--pc:linear-gradient(170deg,#5A3524,#3B2418)">
+                  <div class="glow"></div>
+                  <div class="body"><div class="wm">كيفن</div><h3>شوكولاتة كلاسيك</h3><p>١٢ قطعة · ٣٦٠ جم</p></div>
+                  <svg class="ck" viewBox="0 0 220 220"><use href="#ck-choc"/></svg>
+                </div>
+              </div>
+              <div class="packw" data-fx="up" data-at="1.1">
+                <div class="pack" data-hl="4.8,6.1" data-done="7.3" style="--pc:linear-gradient(170deg,#E0A247,#B9772C)">
+                  <div class="glow"></div>
+                  <div class="body"><div class="wm">كيفن</div><h3>شوفان وعسل</h3><p>١٢ قطعة · ٣٦٠ جم</p></div>
+                  <svg class="ck" viewBox="0 0 220 220"><use href="#ck-oat"/></svg>
+                </div>
+              </div>
+              <div class="packw" data-fx="up" data-at="1.3">
+                <div class="pack" data-hl="6.1,7.3" data-done="7.3" style="--pc:linear-gradient(170deg,#9A4E32,#6E3020)">
+                  <div class="glow"></div>
+                  <div class="body"><div class="wm">كيفن</div><h3>تمر بالسمسم</h3><p>١٢ قطعة · ٣٦٠ جم</p></div>
+                  <svg class="ck" viewBox="0 0 220 220"><use href="#ck-date"/></svg>
+                </div>
+              </div>
+            </div>
+          </div></div>
+        </section>
+
+        <!-- ============ S10 · Pictogram infographic ============ -->
+        <section class="scene" data-start="74" data-end="81" data-tr="blur" data-name="رأي الأهالي">
+          <div class="cam"><div class="drift">
+            <div class="big-stat">
+              <div class="n" data-fx="count" data-at="0.5" data-dur="2.6" data-to="98" data-suffix="٪">٩٨٪</div>
+              <h3 data-fx="up" data-at="1">من الأهالي قالوا إن ولادهم طلبوها تاني</h3>
+              <p data-fx="fade" data-at="2.2">استطلاع على ١٬٢٠٠ أسرة مصرية · ٢٠٢٦</p>
+            </div>
+            <div class="grid100" id="grid100"></div>
+          </div></div>
+        </section>
+
+        <!-- ============ S11 · Outro ============ -->
+        <section class="scene zoomcam" data-start="81" data-end="90" data-tr="fade" data-name="الختام" data-chips="1">
+          <div class="cam"><div class="drift">
+            <div class="title-wrap">
+              <div data-fx="pop" data-at="0.2" data-dur="1.2"><svg class="logo-cookie" viewBox="0 0 220 220"><use href="#ck-choc"/></svg></div>
+              <div data-fx="title" data-at="0.3" data-dur="2">
+                <h1 class="t-ar" style="font-size:132px">كيفن للكوكيز</h1>
+                <div class="t-en" style="font-size:46px">Kevin Cookie Company</div>
+              </div>
+              <div class="title-shadow" data-fx="shadow" data-at="0.3" data-dur="2" style="width:760px"></div>
+              <div class="tagline"><span data-fx="word" data-at="1.9">طعم</span> <span data-fx="word" data-at="2.15"><b>يفرّح</b></span> <span data-fx="word" data-at="2.4">ولادكم،</span> <span data-fx="word" data-at="3.1">ومكونات</span> <span data-fx="word" data-at="3.4"><b>تطمّنكم</b></span></div>
+              <div class="cta" data-fx="up" data-at="4.8"><span class="pill">اطلبوا دلوقتي</span><small>توصيل في نفس اليوم لكل القاهرة الكبرى</small></div>
+            </div>
+          </div></div>
+        </section>
+
+        <canvas class="chips" id="chipsFront" width="1920" height="1080"></canvas>
+
+        <div class="brandbar" id="brandbar">
+          <div class="bm"><svg viewBox="0 0 220 220"><use href="#ck-choc"/></svg>كيفن للكوكيز</div>
+          <div class="chap" id="chap"></div>
+        </div>
+        <div class="subs"><span id="subText"></span></div>
+      </div>
+      <button class="bigplay" id="bigplay" type="button" aria-label="تشغيل"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 5v14L6 12z"/></svg></button>
+    </div>
+
+    <div class="controls">
+      <button class="cbtn primary" id="playBtn" type="button" aria-label="تشغيل"></button>
+      <button class="cbtn" id="restartBtn" type="button" aria-label="من الأول"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v5h-5"/></svg></button>
+      <div class="scrub" id="scrub" role="slider" tabindex="0" aria-label="وقت الفيلم" aria-valuemin="0" aria-valuemax="90" aria-valuenow="0">
+        <div class="track"></div><div class="fill" id="fill"></div><div id="ticks"></div><div class="knob" id="knob"></div>
+      </div>
+      <span class="time" id="time">٠:٠٠ / ١:٣٠</span>
+      <button class="cbtn" id="ccBtn" type="button" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M7 11h4M13 11h4M7 15h7"/></svg><span class="lbl">ترجمة</span></button>
+      <button class="cbtn" id="voiceBtn" type="button" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10v4h4l5 4V6L8 10z"/><path d="M16.5 9a4 4 0 0 1 0 6"/></svg><span class="lbl">صوت تجريبي</span></button>
+      <label class="cbtn" for="audioIn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg><span class="lbl">ملف التعليق</span></label>
+      <input class="file-in" id="audioIn" type="file" accept="audio/*">
+      <button class="cbtn" id="fsBtn" type="button" aria-label="ملء الشاشة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+      <p class="toast" id="toast" role="status"></p>
+    </div>
+  </section>
+
+  <section class="script" aria-labelledby="scriptH">
+    <h2 id="scriptH">نص التعليق والتوقيتات</h2>
+    <p>اضغط على أي جملة علشان تروح للمشهد بتاعها. لو سجّلتوا التعليق بصوتكم على نفس التوقيتات، ارفعوا الملف من زرار «ملف التعليق» والفيلم هيمشي معاه.</p>
+    <ol class="cues" id="cues"></ol>
+  </section>
+</div>
+
+<script>
+(() => {
+'use strict';
+const DURATION = 90;
+const CUES = [
+  [1.6, 7.2,  'أهلاً بيكم في شركة كيفن للكوكيز… كل قطعة عندنا معمولة بحب.'],
+  [7.8, 14.2, 'إحنا عارفين إن أهم حاجة عندكم صحة ولادكم… وفرحتهم.'],
+  [14.8, 18.4, 'علشان كده بنستخدم مكونات طبيعية ١٠٠٪:'],
+  [18.4, 23.2, 'دقيق قمح كامل، زبدة طبيعية، بيض بلدي، وشوكولاتة حقيقية.'],
+  [23.8, 30.7, 'من غير مواد حافظة، ولا ألوان صناعية، ولا نكهات مُصنّعة.'],
+  [31.3, 34.8, 'كل يوم الصبح بنخبز طازة، خطوة بخطوة:'],
+  [34.8, 40.7, 'نختار المكونات، نعجن، نخبز، ونغلّف… لحد باب بيتكم.'],
+  [41.3, 48.2, 'وقلّلنا السكر ٣٠٪ عن الكوكيز العادية… من غير ما الطعم يتأثر.'],
+  [48.8, 52.0, 'حجم القطعة مظبوط على قد شنطة المدرسة،'],
+  [52.0, 56.2, 'وفيها طاقة تكفّي طفلك طول الفسحة.'],
+  [56.8, 61.4, 'حكايتنا بدأت سنة ٢٠١٨ من مطبخ صغير في مصر الجديدة…'],
+  [61.4, 65.7, 'والنهارده بنوصل لأكتر من ٥٠ ألف بيت في مصر.'],
+  [66.3, 69.4, 'اختاروا النكهة اللي ولادكم بيحبوها:'],
+  [69.4, 73.7, 'شوكولاتة كلاسيك، شوفان وعسل، وتمر بالسمسم.'],
+  [74.3, 80.7, 'و٩٨٪ من الأهالي قالوا إن ولادهم طلبوها تاني.'],
+  [81.4, 88.6, 'كيفن للكوكيز… طعم يفرّح ولادكم، ومكونات تطمّنكم.'],
+];
+
+const $ = id => document.getElementById(id);
+const stage = $('stage'), viewport = $('viewport'), player = $('player');
+const nf0 = new Intl.NumberFormat('ar-EG', {maximumFractionDigits: 0});
+const fmtN = (v, dec) => new Intl.NumberFormat('ar-EG', {minimumFractionDigits: dec, maximumFractionDigits: dec}).format(v);
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const fmtTime = s => { s = Math.max(0, Math.floor(s)); return nf0.format(Math.floor(s / 60)) + ':' + nf0.format(s % 60).padStart(2, '٠'); };
+
+/* ---------- seeded random ---------- */
+function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+/* ---------- cookie symbols ---------- */
+const NS = 'http://www.w3.org/2000/svg';
+function blobPath(r, n, wob, R) {
+  const pts = [];
+  for (let i = 0; i < n; i++) { const a = i / n * Math.PI * 2; const rr = r + (R() - .5) * wob; pts.push([Math.cos(a) * rr, Math.sin(a) * rr]); }
+  let d = '';
+  for (let i = 0; i < n; i++) {
+    const p = pts[i], q = pts[(i + 1) % n];
+    const m = [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2];
+    if (i === 0) { const l = pts[n - 1]; d += `M${((l[0] + p[0]) / 2).toFixed(1)} ${((l[1] + p[1]) / 2).toFixed(1)}`; }
+    d += `Q${p[0].toFixed(1)} ${p[1].toFixed(1)} ${m[0].toFixed(1)} ${m[1].toFixed(1)}`;
+  }
+  return d + 'Z';
+}
+function makeCookie(id, kind, seed) {
+  const R = rng(seed), defs = $('defs');
+  const g = `<radialGradient id="${id}-g" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="${kind === 'oat' ? '#F4D9A0' : '#F3CD8C'}"/><stop offset=".7" stop-color="${kind === 'date' ? '#D2934D' : '#DDA157'}"/><stop offset="1" stop-color="#B8742F"/></radialGradient>`;
+  let s = `<symbol id="${id}" viewBox="-110 -110 220 220">`;
+  s += `<path d="${blobPath(100, 26, 7, R)}" fill="url(#${id}-g)"/>`;
+  s += `<path d="${blobPath(90, 22, 6, R)}" fill="none" stroke="#FFF1D2" stroke-opacity=".28" stroke-width="3"/>`;
+  for (let i = 0; i < 4; i++) { // baked cracks
+    const a = R() * 6.28, r1 = 20 + R() * 40, len = 18 + R() * 22, x = Math.cos(a) * r1, y = Math.sin(a) * r1, b = a + 1.2 + R();
+    s += `<path d="M${x.toFixed(1)} ${y.toFixed(1)} q${(Math.cos(b) * len / 2).toFixed(1)} ${(Math.sin(b) * len / 2 + 5).toFixed(1)} ${(Math.cos(b) * len).toFixed(1)} ${(Math.sin(b) * len).toFixed(1)}" stroke="#A8662A" stroke-opacity=".35" stroke-width="2.4" fill="none" stroke-linecap="round"/>`;
+  }
+  const placed = [];
+  const place = (minR, maxR, tries) => { for (let k = 0; k < tries; k++) { const a = R() * 6.28, r = Math.sqrt(R()) * 72, x = Math.cos(a) * r, y = Math.sin(a) * r, sz = minR + R() * (maxR - minR); if (placed.every(p => Math.hypot(p[0] - x, p[1] - y) > p[2] + sz + 5)) { placed.push([x, y, sz]); return [x, y, sz]; } } return null; };
+  if (kind === 'choc') {
+    for (let i = 0; i < 11; i++) { const p = place(8, 15, 40); if (!p) continue; s += `<g transform="translate(${p[0].toFixed(1)} ${p[1].toFixed(1)})"><path d="${blobPath(p[2], 6, p[2] * .5, R)}" fill="url(#chipG)"/><ellipse cx="${(-p[2] * .3).toFixed(1)}" cy="${(-p[2] * .3).toFixed(1)}" rx="${(p[2] * .3).toFixed(1)}" ry="${(p[2] * .18).toFixed(1)}" fill="#fff" opacity=".18"/></g>`; }
+  } else if (kind === 'oat') {
+    for (let i = 0; i < 16; i++) { const p = place(6, 11, 40); if (!p) continue; s += `<ellipse cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" rx="${p[2].toFixed(1)}" ry="${(p[2] * .55).toFixed(1)}" transform="rotate(${(R() * 180).toFixed(0)} ${p[0].toFixed(1)} ${p[1].toFixed(1)})" fill="#F7E6C1" stroke="#C99A55" stroke-width="1.4"/>`; }
+    s += `<path d="M-70 -20 C-40 -50 -10 10 20 -20 S 60 -10 75 -30" stroke="#E09A2B" stroke-width="6" fill="none" stroke-linecap="round" opacity=".85"/><path d="M-60 35 C-30 15 0 55 30 30 S 60 40 70 25" stroke="#E09A2B" stroke-width="5" fill="none" stroke-linecap="round" opacity=".8"/>`;
+  } else {
+    for (let i = 0; i < 8; i++) { const p = place(9, 15, 40); if (!p) continue; s += `<g transform="translate(${p[0].toFixed(1)} ${p[1].toFixed(1)})"><path d="${blobPath(p[2], 6, p[2] * .45, R)}" fill="#6B2C1A"/><ellipse cx="-3" cy="-3" rx="${(p[2] * .35).toFixed(1)}" ry="${(p[2] * .2).toFixed(1)}" fill="#fff" opacity=".15"/></g>`; }
+    for (let i = 0; i < 26; i++) { const a = R() * 6.28, r = Math.sqrt(R()) * 85, x = Math.cos(a) * r, y = Math.sin(a) * r; s += `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="3.6" ry="1.9" transform="rotate(${(R() * 180).toFixed(0)} ${x.toFixed(1)} ${y.toFixed(1)})" fill="#FFF3D8"/>`; }
+  }
+  s += '</symbol>';
+  defs.insertAdjacentHTML('beforeend', g + s);
+}
+// insertAdjacentHTML on an SVG element parses in SVG namespace in modern browsers
+makeCookie('ck-choc', 'choc', 7); makeCookie('ck-oat', 'oat', 21); makeCookie('ck-date', 'date', 42);
+
+/* ---------- 10×10 pictogram ---------- */
+(() => {
+  const grid = $('grid100'); let h = '';
+  for (let i = 0; i < 100; i++) {
+    const at = (0.5 + i * 0.024).toFixed(3);
+    h += i < 98
+      ? `<div class="c" data-fx="pop" data-at="${at}" data-dur=".45"><svg viewBox="0 0 220 220"><use href="#ck-choc"/></svg></div>`
+      : `<div class="c empty" data-fx="fade" data-at="${at}"><span></span></div>`;
+  }
+  grid.innerHTML = h;
+})();
+
+/* ---------- grain ---------- */
+(() => {
+  const c = document.createElement('canvas'); c.width = c.height = 180;
+  const x = c.getContext('2d'), im = x.createImageData(180, 180), R = rng(3);
+  for (let i = 0; i < im.data.length; i += 4) { const v = 120 + R() * 135; im.data[i] = im.data[i + 1] = im.data[i + 2] = v; im.data[i + 3] = 255; }
+  x.putImageData(im, 0, 0);
+  try { $('grain').style.backgroundImage = `url(${c.toDataURL()})`; } catch (e) {}
+})();
+
+/* ---------- engine: collect scenes + fx ---------- */
+const EASE = {
+  out: p => 1 - Math.pow(1 - p, 4),
+  inout: p => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2,
+  back: p => { const c1 = 1.5, c3 = c1 + 1; return 1 + c3 * Math.pow(p - 1, 3) + c1 * Math.pow(p - 1, 2); },
+  lin: p => p,
+};
+const DEF = { pop: ['back', .7], draw: ['inout', 1.2], growy: ['out', 1.2], growx: ['out', .5], count: ['out', 1.6], word: ['out', .9], blur: ['out', 1], zoom: ['out', 1.2], title: ['out', 2], shadow: ['out', 2], drop: ['back', 1] };
+const scenes = [...stage.querySelectorAll('.scene')].map((el, idx) => {
+  const fx = [...el.querySelectorAll('[data-fx]')].map(f => {
+    const type = f.dataset.fx, d = DEF[type] || ['out', .9];
+    const item = { el: f, type, at: +f.dataset.at || 0, dur: +(f.dataset.dur || d[1]), ease: EASE[f.dataset.ease || d[0]], last: -1 };
+    if (type === 'draw') {
+      item.shapes = f.matches('path,line,circle,rect,ellipse,polyline,polygon') ? [f] : [...f.querySelectorAll('path,line,circle,rect,ellipse,polyline,polygon')];
+      item.shapes.forEach(s => { s.setAttribute('pathLength', '1'); s.style.strokeDasharray = '1 1'; s.style.strokeDashoffset = '1'; });
+    }
+    if (type === 'count') { item.to = +f.dataset.to; item.dec = +(f.dataset.dec || 0); item.pre = f.dataset.prefix || ''; item.suf = f.dataset.suffix || ''; }
+    return item;
+  });
+  const hl = [...el.querySelectorAll('[data-hl]')].map(h => { const [a, b] = h.dataset.hl.split(',').map(Number); return { el: h, a, b, done: +(h.dataset.done || 1e9) }; });
+  return { el, idx, start: +el.dataset.start, end: +el.dataset.end, tr: el.dataset.tr, name: el.dataset.name, chips: el.dataset.chips === '1', zoom: el.classList.contains('zoomcam'), fx, hl, on: false };
+});
+const LAST = scenes.length - 1;
+const smooth = p => p * p * (3 - 2 * p);
+
+/* ---------- falling chocolate chips (canvas) ---------- */
+function chipSprite(r, blur) {
+  const pad = Math.ceil(blur * 3 + 4), w = Math.ceil(r * 2 + pad * 2), c = document.createElement('canvas');
+  c.width = w; c.height = Math.ceil(r * 2.1 + pad * 2);
+  const x = c.getContext('2d'); if (blur) x.filter = `blur(${blur}px)`;
+  x.translate(w / 2, c.height / 2 + r * .1); x.scale(r, r);
+  x.beginPath(); x.moveTo(0, -1.05);
+  x.bezierCurveTo(.3, -.6, .95, .0, .88, .45); x.bezierCurveTo(.8, .95, -.8, .95, -.88, .45); x.bezierCurveTo(-.95, .0, -.3, -.6, 0, -1.05); x.closePath();
+  const g = x.createRadialGradient(-.3, -.1, .05, 0, .2, 1.1); g.addColorStop(0, '#80523A'); g.addColorStop(.45, '#4A2A1A'); g.addColorStop(1, '#22120A');
+  x.fillStyle = g; x.fill();
+  x.beginPath(); x.ellipse(-.32, .05, .16, .3, -.4, 0, 6.28); x.fillStyle = 'rgba(255,240,220,.22)'; x.fill();
+  return c;
+}
+const SPR = { far: chipSprite(20, 2.2), mid: chipSprite(30, .6), near: chipSprite(40, 0), bokeh: chipSprite(46, 7) };
+const chips = (() => {
+  const R = rng(99), out = [];
+  const add = (n, layer, sz, sp, al, front) => { for (let i = 0; i < n; i++) out.push({ layer, front, x: 60 + R() * 1800, size: sz[0] + R() * (sz[1] - sz[0]), speed: sp[0] + R() * (sp[1] - sp[0]), delay: R() * 2.4, rot: R() * 6.28, vr: (R() < .5 ? -1 : 1) * (.25 + R() * .9), amp: 8 + R() * 26, fq: .4 + R() * .9, ph: R() * 6.28, alpha: al }); };
+  add(18, 'far', [7, 11], [55, 85], .4, false);
+  add(16, 'mid', [12, 18], [95, 140], .75, false);
+  add(9, 'near', [20, 28], [150, 210], .95, false);
+  add(4, 'bokeh', [38, 52], [190, 250], .45, true);
+  return out;
+})();
+const cBack = $('chipsBack').getContext('2d'), cFront = $('chipsFront').getContext('2d');
+let chipsDrawn = false;
+function drawChips(local, alpha) {
+  cBack.clearRect(0, 0, 1920, 1080); cFront.clearRect(0, 0, 1920, 1080); chipsDrawn = alpha > 0;
+  if (alpha <= 0) return;
+  for (const c of chips) {
+    const tt = local - c.delay; if (tt <= 0) continue;
+    const span = 1080 + 160, y = (tt * c.speed) % span - 80, x = c.x + Math.sin(tt * c.fq + c.ph) * c.amp;
+    const fadeIn = clamp(tt / .6), ctx = c.front ? cFront : cBack, spr = SPR[c.layer], k = c.size / (c.layer === 'far' ? 20 : c.layer === 'mid' ? 30 : c.layer === 'near' ? 40 : 46);
+    ctx.save(); ctx.globalAlpha = c.alpha * alpha * fadeIn; ctx.translate(x, y); ctx.rotate(c.rot + tt * c.vr); ctx.scale(k, k);
+    ctx.drawImage(spr, -spr.width / 2, -spr.height / 2); ctx.restore();
+  }
+}
+
+/* ---------- render(t) ---------- */
+const blob1 = $('blob1'), blob2 = $('blob2'), brandbar = $('brandbar'), chap = $('chap'), subText = $('subText');
+let curCue = -1, curScene = -1;
+function setVar(el, k, v, cacheKey) { const s = v.toFixed(4); if (el[cacheKey] !== s) { el[cacheKey] = s; el.style.setProperty(k, s); } }
+
+function render(t) {
+  let chipAlpha = 0, chipLocal = 0, active = 0, bb = 0;
+  blob1.style.transform = `translate(${Math.sin(t * .13) * 60}px, ${Math.cos(t * .11) * 40}px)`;
+  blob2.style.transform = `translate(${Math.cos(t * .09) * 70}px, ${Math.sin(t * .12) * 50}px)`;
+  for (const s of scenes) {
+    const OUT = .7, local = t - s.start, len = s.end - s.start;
+    const visible = t >= s.start && (s.idx === LAST || t <= s.end + OUT);
+    if (!visible) { if (s.on) { s.on = false; s.el.classList.remove('on'); } continue; }
+    if (!s.on) { s.on = true; s.el.classList.add('on'); }
+    const inP = s.tr === 'none' ? 1 : EASE.inout(clamp(local / .8));
+    const outP = s.idx === LAST ? 0 : EASE.inout(clamp((t - s.end) / OUT));
+    setVar(s.el, '--in', inP, '_in'); setVar(s.el, '--out', outP, '_out');
+    setVar(s.el, '--sp', clamp(local / len), '_sp'); setVar(s.el, '--lt', local, '_lt');
+    if (s.zoom) setVar(s.el, '--zp', Math.sin(clamp(local / (len + OUT)) * Math.PI / 2), '_zp');
+    if (t >= s.start) active = s.idx;
+    const vis = inP * (1 - outP);
+    if (s.chips) { chipAlpha = Math.max(chipAlpha, vis); chipLocal = local; }
+    if (s.idx > 0 && s.idx < LAST) bb = Math.max(bb, vis);
+    for (const f of s.fx) {
+      const p = clamp((local - f.at) / f.dur), e = f.ease(p);
+      if (e === f.last) continue; f.last = e;
+      f.el.style.setProperty('--p', e.toFixed(4));
+      if (f.type === 'draw') { const o = (1 - clamp(e, 0, 1)).toFixed(4); for (const sh of f.shapes) sh.style.strokeDashoffset = o; }
+      else if (f.type === 'count') f.el.textContent = f.pre + fmtN(f.to * clamp(e, 0, 1), f.dec) + f.suf;
+    }
+    for (const h of s.hl) {
+      const w = smooth(clamp((local - h.a) / .4)) * (1 - smooth(clamp((local - h.b) / .4)));
+      setVar(h.el, '--hl', w, '_hl'); setVar(h.el, '--done', smooth(clamp((local - h.done) / .6)), '_dn');
+    }
+  }
+  if (chipAlpha > 0 || chipsDrawn) drawChips(chipLocal, chipAlpha);
+  brandbar.style.setProperty('--bb', bb.toFixed(3));
+  if (active !== curScene) { curScene = active; chap.innerHTML = `<b>${nf0.format(active + 1).padStart(2, '٠')}</b> من ${nf0.format(scenes.length)} — ${scenes[active].name}`; }
+  // subtitles
+  let ci = -1, so = 0;
+  for (let i = 0; i < CUES.length; i++) {
+    const [a, b] = CUES[i];
+    if (t >= a && t < b) {
+      ci = i;
+      const joinPrev = i > 0 && Math.abs(CUES[i - 1][1] - a) < .01, joinNext = i < CUES.length - 1 && Math.abs(CUES[i + 1][0] - b) < .01;
+      so = Math.min(joinPrev ? 1 : clamp((t - a) / .3), joinNext ? 1 : clamp((b - t) / .3));
+      break;
+    }
+  }
+  if (ci !== -1 && ci !== curCue) subText.textContent = CUES[ci][2];
+  if (ci !== curCue) { curCue = ci; onCue(ci); }
+  subText.style.setProperty('--so', so.toFixed(3));
+}
+
+/* ---------- clock ---------- */
+let t = 0, playing = false, lastNow = 0, audio = null;
+const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+function now() { return audio ? audio.currentTime : t; }
+function frame(ts) {
+  if (playing && !audio) { t += Math.min(.1, (ts - lastNow) / 1000); }
+  lastNow = ts;
+  if (audio) t = audio.currentTime;
+  if (t >= DURATION) { t = DURATION; if (playing) pause(); }
+  render(t); updateUI();
+  requestAnimationFrame(frame);
+}
+function play() {
+  if (t >= DURATION - .05) seek(0);
+  playing = true; if (audio) audio.play().catch(() => {});
+  syncUI();
+}
+function pause() { playing = false; if (audio) audio.pause(); stopVoice(); syncUI(); }
+function seek(v) { t = clamp(v, 0, DURATION); if (audio && isFinite(audio.duration)) audio.currentTime = Math.min(t, audio.duration); stopVoice(); }
+
+/* ---------- UI ---------- */
+const playBtn = $('playBtn'), bigplay = $('bigplay'), fill = $('fill'), knob = $('knob'), timeEl = $('time'), scrub = $('scrub'), toast = $('toast');
+const ICON_PLAY = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+const ICON_PAUSE = '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
+function syncUI() {
+  playBtn.innerHTML = playing ? ICON_PAUSE : ICON_PLAY;
+  playBtn.setAttribute('aria-label', playing ? 'إيقاف مؤقت' : 'تشغيل');
+  bigplay.hidden = playing;
+}
+let lastPct = -1;
+function updateUI() {
+  const pct = t / DURATION * 100;
+  if (Math.abs(pct - lastPct) < .02) return; lastPct = pct;
+  fill.style.width = pct + '%'; knob.style.insetInlineStart = pct + '%';
+  timeEl.textContent = fmtTime(t) + ' / ' + fmtTime(DURATION);
+  scrub.setAttribute('aria-valuenow', Math.round(t)); scrub.setAttribute('aria-valuetext', fmtTime(t));
+  cueEls.forEach((el, i) => el.classList.toggle('cur', i === curCue));
+}
+// chapter ticks
+$('ticks').innerHTML = scenes.slice(1).map(s => `<span class="tick" style="inset-inline-start:${s.start / DURATION * 100}%"></span>`).join('');
+// script list
+const cuesList = $('cues');
+cuesList.innerHTML = CUES.map((c, i) => {
+  const sc = scenes.filter(s => c[0] >= s.start).pop();
+  return `<li><button class="cue" type="button" data-i="${i}"><span class="ct">${fmtTime(c[0])}</span><span class="cs">${sc ? sc.name : ''}</span><span>${c[2]}</span></button></li>`;
+}).join('');
+const cueEls = [...cuesList.querySelectorAll('.cue')];
+cuesList.addEventListener('click', e => { const b = e.target.closest('.cue'); if (!b) return; seek(CUES[+b.dataset.i][0] - .3); if (!playing) play(); });
+
+playBtn.addEventListener('click', () => playing ? pause() : play());
+bigplay.addEventListener('click', e => { e.stopPropagation(); play(); });
+viewport.addEventListener('click', () => playing ? pause() : play());
+$('restartBtn').addEventListener('click', () => { seek(0); play(); });
+$('ccBtn').addEventListener('click', e => { const on = e.currentTarget.getAttribute('aria-pressed') !== 'true'; e.currentTarget.setAttribute('aria-pressed', on); stage.classList.toggle('nocc', !on); });
+
+// scrubber (RTL: time runs right → left)
+function scrubAt(x) { const r = scrub.getBoundingClientRect(); seek(clamp((r.right - x) / r.width) * DURATION); }
+let dragging = false, wasPlaying = false;
+scrub.addEventListener('pointerdown', e => { dragging = true; wasPlaying = playing; if (playing) pause(); scrub.setPointerCapture(e.pointerId); scrubAt(e.clientX); });
+scrub.addEventListener('pointermove', e => { if (dragging) scrubAt(e.clientX); });
+scrub.addEventListener('pointerup', () => { dragging = false; if (wasPlaying) play(); });
+scrub.addEventListener('keydown', e => {
+  const k = e.key; let d = 0;
+  if (k === 'ArrowLeft') d = 5; else if (k === 'ArrowRight') d = -5; else if (k === 'Home') { seek(0); e.preventDefault(); return; } else if (k === 'End') { seek(DURATION); e.preventDefault(); return; }
+  if (d) { seek(t + d); e.preventDefault(); }
+});
+document.addEventListener('keydown', e => {
+  if (e.target.closest && e.target.closest('input,button,.scrub')) return;
+  if (e.code === 'Space') { e.preventDefault(); playing ? pause() : play(); }
+});
+
+// fullscreen
+$('fsBtn').addEventListener('click', () => {
+  try {
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    else if (player.requestFullscreen) player.requestFullscreen().catch(() => say('ملء الشاشة مش متاح هنا.'));
+    else say('ملء الشاشة مش متاح هنا.');
+  } catch (err) { say('ملء الشاشة مش متاح هنا.'); }
+});
+
+// scale stage to viewport
+function fit() {
+  const w = viewport.clientWidth, h = viewport.clientHeight, k = Math.min(w / 1920, h / 1080);
+  stage.style.transform = `translate(${(w - 1920 * k) / 2}px, ${(h - 1080 * k) / 2}px) scale(${k})`;
+}
+new ResizeObserver(fit).observe(viewport); fit();
+
+function say(msg) { toast.textContent = msg; clearTimeout(say._t); say._t = setTimeout(() => toast.textContent = '', 5000); }
+
+/* ---------- optional voice: device TTS, or the family's own recording ---------- */
+const voiceBtn = $('voiceBtn'); let voiceOn = false, arVoice = null;
+const synth = window.speechSynthesis;
+function pickVoice() { if (!synth) return; const v = synth.getVoices(); arVoice = v.find(x => /^ar[-_]EG/i.test(x.lang)) || v.find(x => /^ar/i.test(x.lang)) || null; }
+if (synth) { pickVoice(); synth.onvoiceschanged = pickVoice; }
+function stopVoice() { try { synth && synth.cancel(); } catch (e) {} }
+function onCue(i) {
+  if (!voiceOn || !playing || audio || i < 0 || !synth) return;
+  stopVoice();
+  const u = new SpeechSynthesisUtterance(CUES[i][2]);
+  u.lang = arVoice ? arVoice.lang : 'ar-EG'; if (arVoice) u.voice = arVoice; u.rate = 1.05;
+  try { synth.speak(u); } catch (e) {}
+}
+voiceBtn.addEventListener('click', () => {
+  if (!synth) { say('الجهاز ده مش بيدعم القراءة الصوتية.'); return; }
+  voiceOn = !voiceOn; voiceBtn.setAttribute('aria-pressed', voiceOn);
+  pickVoice();
+  if (voiceOn && !arVoice) say('مفيش صوت عربي متسطّب على الجهاز ده، فممكن القراءة تطلع بصوت تاني.');
+  if (!voiceOn) stopVoice(); else if (playing && curCue >= 0) onCue(curCue);
+});
+$('audioIn').addEventListener('change', e => {
+  const file = e.target.files && e.target.files[0]; if (!file) return;
+  if (audio) { audio.pause(); URL.revokeObjectURL(audio.src); }
+  audio = new Audio(URL.createObjectURL(file)); audio.preload = 'auto';
+  voiceOn = false; voiceBtn.setAttribute('aria-pressed', 'false'); stopVoice();
+  audio.addEventListener('loadedmetadata', () => { audio.currentTime = Math.min(t, audio.duration); say(`اتحمّل «${file.name}» — الفيلم دلوقتي ماشي على توقيت التسجيل.`); });
+  audio.addEventListener('ended', () => pause());
+  if (playing) audio.play().catch(() => {});
+});
+
+/* ---------- boot ---------- */
+// small public hook, e.g. for frame-by-frame video export: kevinFilm.pause(); kevinFilm.seek(12.5)
+window.kevinFilm = { play, pause, seek: v => { seek(v); render(t); updateUI(); }, duration: DURATION };
+syncUI();
+if (reduce) { t = 3; } else { play(); }
+requestAnimationFrame(ts => { lastNow = ts; frame(ts); });
+})();
+</script>
+</body>
+</html>
