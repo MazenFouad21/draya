@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>إعلان كورس البرمجة · شباب</title>
+<link href="https://fonts.googleapis.com/css2?family=Lalezar&family=Cairo:wght@600;800;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{--y:#FFD60A;--k:#0A0A0A;--c:#2EE6FF;--p:#FF3D7F;--w:#FFFFFF;--cream:#FFF6E0}
+*{box-sizing:border-box;margin:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--k)}
+body{font-family:'Cairo',sans-serif;color:var(--w)}
+.lz{font-family:'Lalezar',sans-serif;font-weight:400;line-height:1.15}
+.mono{font-family:'JetBrains Mono',monospace;direction:ltr;unicode-bidi:isolate}
+.y{color:var(--y)}.c{color:var(--c)}.p{color:var(--p)}.k{color:var(--k)}
+
+#cam{position:absolute;inset:0;animation:
+  shake .35s 4.3s both,shake .35s 7.9s both,shake .3s 22s both}
+@keyframes shake{0%,100%{transform:none}20%{transform:translate(-18px,10px) rotate(-1deg)}40%{transform:translate(16px,-12px) rotate(1deg)}60%{transform:translate(-10px,8px)}80%{transform:translate(8px,-4px)}}
+.flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:90;animation:
+  fl .3s 4.3s forwards,fl .3s 7.9s forwards,fl .25s 13.4s forwards,fl .3s 22s forwards}
+@keyframes fl{0%{opacity:.9}100%{opacity:0}}
+
+/* persistent badge + progress */
+.badge{position:absolute;top:60px;right:60px;z-index:80;background:var(--k);color:var(--y);border:4px solid var(--y);border-radius:20px;padding:10px 26px;font-size:34px;font-weight:900;transform:rotate(-3deg);animation:pop .4s .3s both}
+.prog{position:absolute;top:0;right:0;height:12px;width:100%;background:var(--y);z-index:85;transform-origin:right;animation:prog 27s linear both}
+@keyframes prog{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+
+.sc{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 70px;opacity:0;overflow:hidden}
+@keyframes on{from{opacity:0}to{opacity:1}}
+@keyframes off{from{opacity:1}to{opacity:0}}
+.s1{background:var(--k);animation:on .1s 0s both,off .1s 2.75s forwards}
+.s2{background:var(--y);animation:on .1s 2.8s both,off .1s 5.55s forwards}
+.s3{background:var(--k);animation:on .1s 5.6s both,off .1s 8.95s forwards}
+.s4a{background:var(--c);animation:on .05s 9s both,off .05s 10.05s forwards}
+.s4b{background:var(--p);animation:on .05s 10.1s both,off .05s 11.15s forwards}
+.s4c{background:var(--y);animation:on .05s 11.2s both,off .05s 12.25s forwards}
+.s4d{background:var(--k);animation:on .05s 12.3s both,off .05s 13.35s forwards}
+.s5{background:var(--cream);color:var(--k);animation:on .1s 13.4s both,off .1s 17.95s forwards}
+.s6{background:var(--y);color:var(--k);animation:on .1s 18s both,off .1s 21.95s forwards}
+.s7{background:var(--k);animation:on .1s 22s both}
+
+/* shared motion */
+@keyframes pop{0%{opacity:0;transform:scale(.4) rotate(-6deg)}70%{opacity:1;transform:scale(1.12)}100%{opacity:1;transform:none}}
+@keyframes slam{0%{opacity:0;transform:scale(2.4)}60%{opacity:1;transform:scale(.94)}100%{opacity:1;transform:none}}
+@keyframes up{from{opacity:0;transform:translateY(80px)}to{opacity:1;transform:none}}
+@keyframes inR{from{opacity:0;transform:translateX(300px)}to{opacity:1;transform:none}}
+@keyframes inL{from{opacity:0;transform:translateX(-300px)}to{opacity:1;transform:none}}
+@keyframes blink{50%{opacity:.25}}
+
+/* S1: phone */
+.phone{width:620px;height:1180px;border-radius:80px;background:linear-gradient(160deg,#1b2340,#0d0f1c);border:14px solid #222;box-shadow:0 0 0 4px #444,0 60px 120px -30px rgba(46,230,255,.35);position:relative;padding:150px 36px 0;animation:up .5s 0s both}
+.phone .clock{font-size:130px;font-weight:800;color:#fff;line-height:1}
+.phone .date{font-size:30px;color:#b9c2e0;margin-bottom:40px}
+.notif{background:rgba(255,255,255,.14);border-radius:30px;padding:22px 26px;margin-bottom:18px;display:flex;gap:18px;align-items:center;text-align:right;font-size:31px;font-weight:700}
+.notif .ic{font-size:50px}
+.notif small{display:block;font-size:24px;color:#b9c2e0;font-weight:600}
+.n1{animation:inR .35s .35s both}.n2{animation:inR .35s .65s both}.n3{animation:inR .35s .95s both}
+.s1 .punch{position:absolute;bottom:250px;left:40px;right:40px;font-size:130px;color:var(--y);text-shadow:0 10px 0 var(--k),0 0 40px rgba(0,0,0,.8);animation:slam .4s 1.5s both}
+.s1 .punch span{background:var(--p);color:#fff;padding:0 24px;border-radius:20px;display:inline-block;transform:rotate(-2deg)}
+
+/* S2 */
+.s2 .l1{font-size:120px;color:var(--k);animation:up .3s 2.9s both}
+.s2 .l2{font-size:96px;color:var(--k);opacity:.6;animation:up .3s 3.4s both}
+.s2 .smash{margin-top:60px;background:var(--k);color:var(--y);padding:40px 50px 30px;border-radius:40px;transform:rotate(-3deg);animation:slam .35s 4.3s both}
+.s2 .smash .a{font-size:110px;display:block}
+.s2 .smash .b{font-size:170px;display:block;color:#fff}
+
+/* S3: level up */
+.hud{width:900px;text-align:right}
+.hud .who{font-family:'JetBrains Mono';font-size:44px;color:var(--c);animation:up .3s 5.7s both;direction:ltr;text-align:left}
+.xp{margin-top:24px;height:80px;border:6px solid #fff;border-radius:20px;padding:8px;animation:up .3s 5.8s both}
+.xp i{display:block;height:100%;border-radius:10px;background:linear-gradient(270deg,var(--y),var(--p));transform-origin:right;animation:fill 1.8s 6s cubic-bezier(.6,0,.4,1) both}
+@keyframes fill{from{transform:scaleX(.05)}to{transform:scaleX(1)}}
+.xp-l{display:flex;justify-content:space-between;font-size:44px;font-weight:900;margin-top:16px;animation:up .3s 5.9s both}
+.lvl{margin-top:90px;font-family:'JetBrains Mono';font-weight:700;font-size:150px;color:var(--y);direction:ltr;text-shadow:8px 8px 0 var(--p);animation:slam .35s 7.9s both}
+.s3 .sub{font-size:84px;margin-top:30px;animation:up .3s 8.2s both}
+
+/* S4: rapid words */
+.word{font-size:170px;line-height:1.1}
+.word .e{display:block;font-size:220px;margin-bottom:20px}
+.s4a .word{animation:slam .3s 9s both;color:var(--k)}
+.s4b .word{animation:slam .3s 10.1s both;color:#fff}
+.s4c .word{animation:slam .3s 11.2s both;color:var(--k)}
+.s4d .word{animation:slam .3s 12.3s both;color:var(--y)}
+
+/* S5: parents */
+.s5 .hi{font-size:120px;animation:up .4s 13.5s both}
+.s5 .line{font-size:66px;white-space:nowrap;font-weight:900;margin-top:30px;animation:up .4s 14.1s both}
+.strike{position:relative;color:var(--p)}
+.strike::after{content:"";position:absolute;right:0;left:0;top:55%;height:12px;background:var(--k);border-radius:6px;transform-origin:right;animation:strk .35s 14.8s both}
+@keyframes strk{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.s5 .better{font-size:104px;margin-top:20px;background:var(--k);color:var(--y);padding:20px 40px 10px;border-radius:30px;animation:pop .4s 15.3s both}
+.checks{margin-top:60px;display:flex;flex-direction:column;gap:20px;width:860px}
+.chk{display:flex;align-items:center;gap:24px;background:#fff;border:5px solid var(--k);border-radius:26px;padding:20px 30px;font-size:52px;font-weight:900;box-shadow:10px 10px 0 var(--k);text-align:right}
+.chk b{background:var(--y);border:4px solid var(--k);border-radius:14px;width:70px;height:70px;display:grid;place-items:center;font-size:44px;flex:none}
+.checks .chk:nth-child(1){animation:inL .3s 16s both}
+.checks .chk:nth-child(2){animation:inL .3s 16.4s both}
+.checks .chk:nth-child(3){animation:inL .3s 16.8s both}
+
+/* S6: course ticket */
+.ticket{width:920px;background:#fff;border:7px solid var(--k);border-radius:44px;box-shadow:18px 18px 0 var(--k);overflow:hidden;animation:pop .45s 18.1s both}
+.ticket .top{background:var(--k);color:var(--y);padding:40px 30px 30px}
+.ticket .top .lz{font-size:140px}
+.ticket .top small{display:block;color:#fff;font-size:44px;font-weight:800}
+.ticket .rows{padding:24px 44px 34px;display:flex;flex-direction:column}
+.trow{display:flex;justify-content:space-between;align-items:center;padding:24px 0;border-bottom:4px dashed #ccc;font-size:50px;font-weight:900}
+.trow:last-child{border:0}
+.trow span{color:#666;font-weight:800}
+.rows .trow:nth-child(1){animation:up .3s 18.7s both}
+.rows .trow:nth-child(2){animation:up .3s 19s both}
+.rows .trow:nth-child(3){animation:up .3s 19.3s both}
+.rows .trow:nth-child(4){animation:up .3s 19.6s both}
+
+/* S7: CTA */
+.warn{background:var(--p);color:#fff;font-size:60px;font-weight:900;padding:14px 40px;border-radius:999px;animation:pop .3s 22.1s both,blink .8s 22.6s infinite}
+.go{font-size:200px;color:var(--y);margin-top:40px;animation:slam .4s 22.3s both}
+.go small{display:block;font-size:110px;color:#fff}
+.call{margin-top:40px;background:var(--y);color:var(--k);font-size:64px;font-weight:900;padding:30px 50px;border-radius:30px;box-shadow:0 0 0 8px rgba(255,214,10,.25);animation:pop .4s 23s both}
+.links{margin-top:50px;display:flex;flex-direction:column;gap:18px;width:900px}
+.lk{direction:ltr;display:flex;align-items:center;gap:22px;border:4px solid #fff;border-radius:22px;padding:18px 28px}
+.lk .e{font-size:48px}
+.lk .mono{font-size:31px;white-space:nowrap}
+.links .lk:nth-child(1){animation:inL .3s 23.6s both}
+.links .lk:nth-child(2){animation:inL .3s 23.9s both}
+.links .lk:nth-child(3){animation:inL .3s 24.2s both}
+</style>
+</head>
+<body>
+<div class="prog"></div>
+<div class="flash"></div>
+<div class="badge">🌟 نادي بهجة المسائي</div>
+<div id="cam">
+
+<!-- S1: relatable hook -->
+<section class="sc s1">
+  <div class="phone">
+    <div class="clock mono">11:47</div>
+    <div class="date">الخميس · بالليل</div>
+    <div class="notif n1"><span class="ic">⏱️</span><div>مدة استخدام الشاشة النهارده<small>٩ ساعات و ٢٣ دقيقة</small></div></div>
+    <div class="notif n2"><span class="ic">🎮</span><div>اللعبة: ارجع كمّل الليفل!<small>من دقيقة</small></div></div>
+    <div class="notif n3"><span class="ic">🪫</span><div>البطارية ٣٪<small>اشحن الموبايل</small></div></div>
+  </div>
+  <div class="punch lz"><span>٩ ساعات</span><br>على الموبايل؟! 😳</div>
+</section>
+
+<!-- S2: flip the idea -->
+<section class="sc s2">
+  <div class="l1 lz">كل يوم بتلعب ألعاب…</div>
+  <div class="l2 lz">غيرك هو اللي عاملها 🤷‍♂️</div>
+  <div class="smash lz"><span class="a">طب ما تعمل</span><span class="b">لعبتك انت! 🎮</span></div>
+</section>
+
+<!-- S3: level up -->
+<section class="sc s3">
+  <div class="hud">
+    <div class="who">PLAYER_1 → DEVELOPER</div>
+    <div class="xp"><i></i></div>
+    <div class="xp-l"><span class="c">بيلعب 🎮</span><span class="y">بيبرمج 💻</span></div>
+  </div>
+  <div class="lvl">LEVEL UP!</div>
+  <div class="sub lz">من <span class="p">بيلعب</span> ⬅ لـ <span class="y">بيعمل</span></div>
+</section>
+
+<!-- S4: rapid-fire -->
+<section class="sc s4a"><div class="word lz"><span class="e">🎮</span>هتعمل لعبتك</div></section>
+<section class="sc s4b"><div class="word lz"><span class="e">🌐</span>هتبني موقعك</div></section>
+<section class="sc s4c"><div class="word lz"><span class="e">🧠</span>هتفكر زي المبرمجين</div></section>
+<section class="sc s4d"><div class="word lz"><span class="e">🏆</span>وتطلع بمشروع باسمك</div></section>
+
+<!-- S5: parents -->
+<section class="sc s5">
+  <div class="hi lz">يا بابا… يا ماما 👨‍👩‍👦</div>
+  <div class="line">بدل ما الموبايل <span class="strike">ياكل وقته</span></div>
+  <div class="better lz">خليه يتعلم مهارة المستقبل ✨</div>
+  <div class="checks">
+    <div class="chk"><b>✔</b>مكان آمن ومحترم</div>
+    <div class="chk"><b>✔</b>مدربين متخصصين</div>
+    <div class="chk"><b>✔</b>قريب منك في عين شمس</div>
+  </div>
+</section>
+
+<!-- S6: course card -->
+<section class="sc s6">
+  <div class="ticket">
+    <div class="top"><div class="lz">كورس البرمجة</div><small>نادي بهجة المسائي للفتيان</small></div>
+    <div class="rows">
+      <div class="trow"><span>👦 السن</span>[من … لـ … سنة]</div>
+      <div class="trow"><span>🗓️ المواعيد</span>[الأيام · الساعة]</div>
+      <div class="trow"><span>🚀 البداية</span>[تاريخ البداية]</div>
+      <div class="trow"><span>📍 المكان</span>عين شمس</div>
+    </div>
+  </div>
+</section>
+
+<!-- S7: CTA -->
+<section class="sc s7">
+  <div class="warn">⚠️ الأماكن محدودة</div>
+  <div class="go lz">سجّل<small>دلوقتي! 🔥</small></div>
+  <div class="call">📲 [رقم التواصل]</div>
+  <div class="links">
+    <div class="lk"><span class="e">✈️</span><span class="mono">t.me/Programming_Videos_NadyBahga</span></div>
+    <div class="lk"><span class="e">▶️</span><span class="mono">youtube.com/@mazenmohamedfouad-us7ui</span></div>
+    <div class="lk"><span class="e">🌐</span><span class="mono">www.lifecoderac.com</span></div>
+  </div>
+</section>
+
+</div>
+<script>
+// seek(t): freeze every animation at time t (seconds) — used for frame-by-frame rendering.
+window.seek=t=>{for(const a of document.getAnimations()){a.pause();a.currentTime=t*1000}};
+if(!/render/.test(location.hash)){
+  const t0=performance.now();
+  (function loop(){window.seek((performance.now()-t0)/1000%28);requestAnimationFrame(loop)})();
+}
+</script>
+</body>
+</html>
