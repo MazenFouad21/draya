@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>إعلان كورس البرمجة</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* Course details — edit these lines, then re-render with render-ad.js */
+:root{
+  --teal:#1AC4C1; --lime:#8DDD60; --green:#2E9E4A;
+  --ink:#0B1D24; --ink2:#12303A; --white:#F4FFFE; --muted:#9CC3C6;
+}
+*{box-sizing:border-box;margin:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--ink)}
+body{font-family:'Cairo',sans-serif;color:var(--white);position:relative}
+.mono{font-family:'JetBrains Mono',monospace;direction:ltr;unicode-bidi:isolate}
+.grad{background:linear-gradient(90deg,var(--lime),var(--teal));-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* background */
+.bg{position:absolute;inset:0;background:
+  radial-gradient(900px 700px at 85% 10%,rgba(26,196,193,.28),transparent 60%),
+  radial-gradient(800px 800px at 10% 90%,rgba(141,221,96,.22),transparent 60%),
+  linear-gradient(180deg,#0B1D24,#0E2830)}
+.grid{position:absolute;inset:-200px;background-image:
+  linear-gradient(rgba(26,196,193,.08) 2px,transparent 2px),
+  linear-gradient(90deg,rgba(26,196,193,.08) 2px,transparent 2px);
+  background-size:90px 90px;animation:drift 20s linear both}
+@keyframes drift{to{transform:translate(-180px,-180px)}}
+.glyph{position:absolute;font-family:'JetBrains Mono';font-weight:700;color:rgba(141,221,96,.18);font-size:64px;animation:float 20s linear both}
+@keyframes float{to{transform:translateY(-420px) rotate(12deg)}}
+
+/* header (always on) */
+.brand{position:absolute;top:70px;left:0;right:0;display:flex;justify-content:center;animation:fadeDown .8s .2s both}
+.brand span{background:rgba(255,255,255,.08);border:2px solid rgba(26,196,193,.5);border-radius:999px;padding:14px 36px;font-size:38px;font-weight:800}
+
+/* scenes */
+.scene{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 80px;gap:36px;opacity:0}
+.s1{animation:sceneIn .5s 0s both,sceneOut .5s 4.2s forwards}
+.s2{animation:sceneIn .5s 4.6s both,sceneOut .5s 8.6s forwards}
+.s3{animation:sceneIn .5s 9s both,sceneOut .5s 14.4s forwards}
+.s4{animation:sceneIn .5s 14.8s both,sceneOut .5s 19.4s forwards}
+.s5{animation:sceneIn .5s 19.8s both}
+@keyframes sceneIn{from{opacity:0}to{opacity:1}}
+@keyframes sceneOut{from{opacity:1}to{opacity:0}}
+
+/* scene 1: hook */
+.q{font-size:96px;font-weight:900;line-height:1.35}
+.term{direction:ltr;width:860px;background:#06141A;border:2px solid rgba(26,196,193,.45);border-radius:28px;box-shadow:0 30px 80px -20px rgba(26,196,193,.45);overflow:hidden;text-align:left;animation:pop .6s .9s both}
+.term .bar{display:flex;gap:14px;padding:22px 26px;background:rgba(255,255,255,.04)}
+.term .bar i{width:22px;height:22px;border-radius:50%;background:#E5484D}
+.term .bar i:nth-child(2){background:#F5A524}.term .bar i:nth-child(3){background:var(--lime)}
+.term pre{direction:ltr;unicode-bidi:isolate;font-family:'JetBrains Mono';font-size:44px;line-height:1.6;padding:24px 36px 36px;color:var(--white);min-height:260px;white-space:pre}
+.term .k{color:var(--teal)}.term .s{color:var(--lime)}
+.cursor{display:inline-block;width:22px;height:48px;background:var(--lime);vertical-align:-8px}
+
+/* scene 2: title */
+.kick{font-size:44px;font-weight:800;color:var(--lime);animation:fadeUp .6s 5s both}
+.big{font-size:170px;font-weight:900;line-height:1.1;animation:zoom .8s 5.2s both}
+.sub{font-size:58px;font-weight:800;animation:fadeUp .6s 6s both}
+.tag{display:inline-block;margin-top:10px;background:linear-gradient(90deg,var(--green),var(--teal));color:#fff;font-size:50px;font-weight:900;padding:16px 48px;border-radius:999px;animation:pop .6s 6.6s both;box-shadow:0 20px 50px -15px rgba(26,196,193,.7)}
+
+/* scene 3: what you learn */
+.h{font-size:84px;font-weight:900}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:30px;width:920px}
+.card{background:rgba(255,255,255,.06);border:2px solid rgba(26,196,193,.35);border-radius:32px;padding:40px 24px;display:flex;flex-direction:column;align-items:center;gap:14px}
+.card .e{font-size:96px;line-height:1}
+.card b{font-size:46px;font-weight:800;line-height:1.3}
+.cards .card:nth-child(1){animation:pop .5s 9.6s both}
+.cards .card:nth-child(2){animation:pop .5s 10.2s both}
+.cards .card:nth-child(3){animation:pop .5s 10.8s both}
+.cards .card:nth-child(4){animation:pop .5s 11.4s both}
+.note{font-size:46px;font-weight:700;color:var(--muted);animation:fadeUp .6s 12.2s both}
+
+/* scene 4: details */
+.rows{display:flex;flex-direction:column;gap:26px;width:900px}
+.row{display:flex;align-items:center;gap:30px;background:rgba(255,255,255,.06);border:2px solid rgba(141,221,96,.3);border-radius:30px;padding:30px 40px;text-align:right}
+.row .e{font-size:72px}
+.row div small{display:block;font-size:36px;color:var(--muted);font-weight:700}
+.row div b{font-size:54px;font-weight:900}
+.rows .row:nth-child(1){animation:slideIn .5s 15.3s both}
+.rows .row:nth-child(2){animation:slideIn .5s 15.8s both}
+.rows .row:nth-child(3){animation:slideIn .5s 16.3s both}
+.rows .row:nth-child(4){animation:slideIn .5s 16.8s both}
+
+/* scene 5: CTA */
+.cta{font-size:120px;font-weight:900;line-height:1.2;animation:zoom .7s 20.1s both}
+.seats{font-size:52px;font-weight:800;color:var(--lime);animation:fadeUp .6s 20.8s both}
+.reg{background:linear-gradient(90deg,var(--lime),var(--teal));color:var(--ink);font-size:58px;font-weight:900;padding:26px 60px;border-radius:30px;animation:pop .6s 21.3s both,pulse 1.2s 22s infinite}
+.links{display:flex;flex-direction:column;gap:20px;width:860px;margin-top:10px}
+.link{direction:ltr;display:flex;align-items:center;gap:24px;background:rgba(255,255,255,.07);border:2px solid rgba(26,196,193,.4);border-radius:26px;padding:22px 34px}
+.link .e{font-size:54px}
+.link .mono{font-size:32px;white-space:nowrap;font-weight:700;color:var(--white)}
+.links .link:nth-child(1){animation:slideIn .5s 22s both}
+.links .link:nth-child(2){animation:slideIn .5s 22.4s both}
+.links .link:nth-child(3){animation:slideIn .5s 22.8s both}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(60px)}to{opacity:1;transform:none}}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-40px)}to{opacity:1;transform:none}}
+@keyframes zoom{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+@keyframes pop{0%{opacity:0;transform:scale(.7)}70%{opacity:1;transform:scale(1.06)}100%{opacity:1;transform:none}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-120px)}to{opacity:1;transform:none}}
+@keyframes pulse{50%{transform:scale(1.05)}}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="grid"></div>
+<div class="glyph" style="top:1500px;left:60px">{ }</div>
+<div class="glyph" style="top:1650px;left:820px">&lt;/&gt;</div>
+<div class="glyph" style="top:1350px;left:520px">( )</div>
+<div class="glyph" style="top:1800px;left:330px">;</div>
+<div class="glyph" style="top:1250px;left:900px">=&gt;</div>
+
+<div class="brand"><span>🌟 نادي بهجة المسائي للفتيان</span></div>
+
+<!-- 1. Hook -->
+<section class="scene s1">
+  <div class="q">نفسك تعمل <span class="grad">لعبتك</span><br>أو <span class="grad">موقعك</span> بإيدك؟ 🤔</div>
+  <div class="term"><div class="bar"><i></i><i></i><i></i></div><pre id="code"></pre></div>
+</section>
+
+<!-- 2. Title -->
+<section class="scene s2">
+  <div class="kick">💻 الكورس اللي مستنيه</div>
+  <div class="big">كورس<br><span class="grad">البرمجة</span></div>
+  <div class="sub">في نادي بهجة المسائي</div>
+  <div class="tag">للفتيان 👦</div>
+</section>
+
+<!-- 3. What you learn -->
+<section class="scene s3">
+  <div class="h">هتتعلم <span class="grad">إيه؟</span></div>
+  <div class="cards">
+    <div class="card"><span class="e">🧠</span><b>التفكير المنطقي<br>وحل المشكلات</b></div>
+    <div class="card"><span class="e">🎮</span><b>تصميم الألعاب</b></div>
+    <div class="card"><span class="e">🌐</span><b>بناء مواقع الويب</b></div>
+    <div class="card"><span class="e">🐍</span><b>أساسيات<br>لغات البرمجة</b></div>
+  </div>
+  <div class="note">من الصفر · خطوة بخطوة · بالتطبيق العملي</div>
+</section>
+
+<!-- 4. Details -->
+<section class="scene s4">
+  <div class="h">التفاصيل <span class="grad">📋</span></div>
+  <div class="rows">
+    <div class="row"><span class="e">👦</span><div><small>السن</small><b>[من ... لـ ... سنة]</b></div></div>
+    <div class="row"><span class="e">🗓️</span><div><small>المواعيد</small><b>[الأيام · الساعة]</b></div></div>
+    <div class="row"><span class="e">🚀</span><div><small>البداية</small><b>[تاريخ البداية]</b></div></div>
+    <div class="row"><span class="e">📍</span><div><small>المكان</small><b>نادي بهجة المسائي</b></div></div>
+  </div>
+</section>
+
+<!-- 5. CTA -->
+<section class="scene s5">
+  <div class="cta">احجز مكانك<br><span class="grad">دلوقتي!</span></div>
+  <div class="seats">⚡ الأماكن محدودة</div>
+  <div class="reg">📲 للتسجيل: [رقم التواصل]</div>
+  <div class="links">
+    <div class="link"><span class="e">✈️</span><span class="mono">t.me/Programming_Videos_NadyBahga</span></div>
+    <div class="link"><span class="e">▶️</span><span class="mono">youtube.com/@mazenmohamedfouad-us7ui</span></div>
+    <div class="link"><span class="e">🌐</span><span class="mono">www.lifecoderac.com</span></div>
+  </div>
+</section>
+
+<script>
+// Typing effect for the terminal in scene 1, driven by the same clock as the CSS animations.
+const CODE=[['k','if '],['','(you.want()) {\n'],['','  '],['s','learn'],['','("coding");\n'],['','  build('],['s','"game 🎮"'],['',');\n}']];
+const LEN=CODE.reduce((n,c)=>n+[...c[1]].length,0);
+function typeAt(t){
+  const n=Math.max(0,Math.min(LEN,Math.floor((t-1.2)*32)));
+  let left=n,html='';
+  for(const [cls,txt] of CODE){
+    if(left<=0)break;
+    const chars=[...txt].slice(0,left);left-=chars.length;const part=chars.join('');
+    const esc=part.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+    html+=cls?`<span class="${cls}">${esc}</span>`:esc;
+  }
+  const blink=Math.floor(t*2)%2===0||n<LEN;
+  document.getElementById('code').innerHTML=html+(blink?'<span class="cursor"></span>':'');
+}
+// seek(t): freeze every animation at time t (seconds) — used for frame-by-frame rendering.
+window.seek=t=>{
+  for(const a of document.getAnimations()){a.pause();a.currentTime=t*1000}
+  typeAt(t);
+};
+// Live preview when opened directly in a browser.
+if(!/render/.test(location.hash)){
+  const t0=performance.now();
+  (function loop(){const t=(performance.now()-t0)/1000%26;window.seek(t);requestAnimationFrame(loop)})();
+}
+</script>
+</body>
+</html>
