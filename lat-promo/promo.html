@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>مجلة العلم والعمل · ريل</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@500;700&family=Lalezar&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#040913; --navy:#071433; --blue:#1b4fd6; --y:#f5b834; --paper:#f6f0e7; --ink:#061a22;
+  --teal:#45a9b9; --orange:#f59a2c; --green:#5cc28a; --mute:#9fb0cf; --red:#ff4d5e;
+  --display:"Lalezar","IBM Plex Sans Arabic",sans-serif; --body:"IBM Plex Sans Arabic",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#000}
+body{font-family:var(--body);color:#fff}
+#stage{position:relative;width:1080px;height:1920px;overflow:hidden;background:var(--night);transform-origin:0 0}
+.abs{position:absolute}
+.cx{left:0;right:0;text-align:center}
+.y{color:var(--y)}
+.d{font-family:var(--display);font-weight:400;line-height:1.15;margin:0;text-shadow:0 10px 30px rgba(0,0,0,.55)}
+
+/* background: blue glow + grid + vignette (like the LAT reel) */
+#glow{position:absolute;width:1500px;height:1500px;left:-210px;top:110px;border-radius:50%;background:radial-gradient(circle,rgba(30,90,230,.55) 0%,rgba(20,60,170,.25) 38%,rgba(4,9,19,0) 68%)}
+.grid{position:absolute;inset:0;background-image:linear-gradient(rgba(90,140,255,.10) 2px,transparent 2px),linear-gradient(90deg,rgba(90,140,255,.10) 2px,transparent 2px);background-size:72px 72px;mask-image:radial-gradient(ellipse at 50% 45%,#000 20%,transparent 75%);-webkit-mask-image:radial-gradient(ellipse at 50% 45%,#000 20%,transparent 75%)}
+.vig{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,transparent 50%,rgba(0,0,0,.65) 100%);pointer-events:none;z-index:40}
+
+/* pills / captions */
+.pill{display:inline-flex;align-items:center;gap:12px;background:var(--y);color:#1d1205;font-weight:700;font-size:38px;padding:8px 30px;border-radius:999px;box-shadow:0 10px 30px rgba(245,184,52,.3)}
+.pill.red{background:var(--red);color:#fff;box-shadow:0 10px 30px rgba(255,77,94,.35)}
+.pill.blue{background:var(--blue);color:#fff;box-shadow:0 10px 30px rgba(27,79,214,.45)}
+#capbox{left:40px;right:40px;top:1572px;height:170px;border-radius:30px;background:rgba(3,10,24,.88);border:2px solid rgba(120,150,220,.2);z-index:45}
+.cap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:0 40px;text-align:center;font-weight:700;font-size:46px;line-height:1.5}
+.cap b{color:var(--y);font-weight:700}
+
+/* phone */
+.phone{width:600px;height:1180px;border-radius:92px;background:#0b1222;border:16px solid #141d33;box-shadow:0 60px 120px rgba(0,0,0,.6),0 0 0 3px rgba(120,150,220,.25),inset 0 0 0 2px #000;overflow:hidden}
+.phone .notch{position:absolute;top:22px;left:50%;width:170px;height:46px;margin-left:-85px;border-radius:30px;background:#000;z-index:3}
+.feed{position:absolute;left:26px;right:26px;top:0}
+.post{height:400px;border-radius:44px;margin-bottom:26px;position:relative;padding:30px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.12)}
+.post i{display:block;height:20px;border-radius:10px;background:rgba(255,255,255,.55)}
+.post .av{position:absolute;top:28px;left:28px;width:54px;height:54px;border-radius:50%;background:rgba(255,255,255,.6)}
+.post .img{position:absolute;left:30px;right:30px;top:96px;bottom:84px;border-radius:26px;background:rgba(255,255,255,.22)}
+.post .ic{position:absolute;bottom:22px;left:30px;font-size:34px;letter-spacing:18px}
+.dim{position:absolute;inset:0;background:rgba(4,9,19,.0);z-index:2}
+
+/* page cards */
+.pcard{width:600px;height:848px;border-radius:12px;overflow:hidden;box-shadow:0 50px 100px rgba(0,0,0,.65),0 0 0 2px rgba(255,255,255,.08);background:var(--paper)}
+.pcard img{width:100%;height:100%;display:block}
+.num{position:absolute;top:-46px;right:-36px;width:120px;height:120px;border-radius:50%;background:var(--y);color:#1d1205;font-family:var(--display);font-size:64px;display:grid;place-items:center;box-shadow:0 14px 34px rgba(0,0,0,.45);z-index:2}
+.topic{position:absolute;bottom:-30px;left:50%;transform:translateX(-50%);white-space:nowrap;background:#0b1631;border:2px solid rgba(120,150,220,.3);border-radius:999px;padding:8px 26px;font-weight:700;font-size:30px;color:#cfe0ff;z-index:2}
+
+.cover{width:640px;height:905px;border-radius:6px 16px 16px 6px;overflow:hidden;position:relative;box-shadow:-40px 60px 120px rgba(0,0,0,.7),0 0 0 2px rgba(255,255,255,.08)}
+.cover img{width:100%;height:100%;display:block}
+.cover .sheen{position:absolute;inset:0;background:linear-gradient(105deg,rgba(255,255,255,0) 35%,rgba(255,255,255,.35) 48%,rgba(255,255,255,0) 60%);background-size:260% 100%}
+.cover .spine{position:absolute;top:0;bottom:0;right:0;width:22px;background:linear-gradient(90deg,rgba(0,0,0,.35),rgba(255,255,255,.18))}
+
+/* stats */
+.stat{width:300px;padding:30px 10px 26px;border-radius:40px;background:rgba(7,20,51,.85);border:2px solid rgba(120,150,220,.25);text-align:center;box-shadow:0 30px 70px rgba(0,0,0,.5)}
+.stat b{display:block;font-family:var(--display);font-weight:400;font-size:150px;line-height:1;color:var(--y)}
+.stat span{font-weight:700;font-size:40px}
+.row{display:flex;gap:22px;white-space:nowrap}
+.row img{width:230px;height:325px;border-radius:8px;box-shadow:0 20px 40px rgba(0,0,0,.5);opacity:.5}
+
+/* quiz (magazine's quiz card) */
+.qcard{background:var(--paper);color:var(--ink);border-radius:48px;padding:46px 48px;box-shadow:0 60px 120px rgba(0,0,0,.6)}
+.qcard .eb{font-weight:700;color:#2d7d8b;font-size:30px}
+.qcard h3{font-family:var(--display);font-weight:400;font-size:66px;margin:6px 0 4px}
+.qcard .qn{font-size:28px;font-weight:700;color:#2d7d8b;margin-top:10px}
+.qcard .qt{font-size:42px;font-weight:700;line-height:1.5;margin:8px 0 22px}
+.opt{border:4px solid #d9d2c2;background:#fff;border-radius:28px;padding:20px 30px;font-size:36px;font-weight:500;margin-top:16px;display:flex;align-items:center;gap:16px}
+.opt em{margin-inline-start:auto;font-style:normal;font-size:40px}
+.badges{display:flex;justify-content:center;gap:22px}
+.badge{width:130px;height:130px;border-radius:50%;display:grid;place-items:center;font-size:62px;background:rgba(243,223,184,.08);border:3px dashed rgba(243,223,184,.25)}
+
+/* end */
+.ringc{width:620px;height:620px;border-radius:50%;border:4px solid rgba(245,184,52,.6);box-shadow:0 0 80px rgba(27,79,214,.5),inset 0 0 60px rgba(27,79,214,.35)}
+.ringc2{width:720px;height:720px;border-radius:50%;border:3px dashed rgba(120,150,220,.35)}
+.cta{display:inline-flex;align-items:center;gap:18px;background:var(--y);color:#1d1205;font-weight:700;font-size:56px;padding:26px 66px;border-radius:999px;box-shadow:0 18px 50px rgba(245,184,52,.4)}
+.book{perspective:2400px}
+.leaf{position:absolute;inset:0;transform-origin:right center;transform-style:preserve-3d}
+.leaf .f,.leaf .b{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;border-radius:6px 16px 16px 6px}
+.leaf .b{transform:rotateY(180deg);background:var(--paper)}
+.leaf img,.under img{width:100%;height:100%;display:block}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="glow"></div><div class="grid"></div>
+
+  <!-- ===== S1 · Hook ===== -->
+  <div class="scene" data-in="0" data-out="b2-.2">
+    <div class="abs phone" style="left:240px;top:250px" id="ph1"><div class="notch"></div><div class="feed" id="feed1"></div><div class="dim" style="background:rgba(4,9,19,.45)"></div></div>
+    <div class="abs cx" style="top:560px;z-index:5">
+      <div data-a="pop@0/.35"><span class="pill red">⏱ ٣ ثواني بس</span></div>
+      <h1 class="d" data-a="zoom@.05/.4" style="font-size:210px;margin-top:10px">سؤال</h1>
+      <h1 class="d y" data-a="zoom@.3/.4" style="font-size:210px;margin-top:-30px">سريع ✋</h1>
+    </div>
+  </div>
+
+  <!-- ===== S2 · Question deck (4 articles) ===== -->
+  <div class="scene" data-in="b2-.15" data-out="b6-.15">
+    <div class="abs cx" style="top:150px;z-index:6;height:300px">
+      <div class="abs cx" data-a="up@b2/.35" data-o="b3-.08"><h1 class="d" style="font-size:104px">هو المؤمن ممكن<br><span class="y">يتعب نفسيًا؟</span> 🧠</h1></div>
+      <div class="abs cx" data-a="up@b3/.35" data-o="b4-.08"><h1 class="d" style="font-size:104px">رقبتك بتوجعك<br><span class="y">بعد المذاكرة؟</span> 🪑</h1></div>
+      <div class="abs cx" data-a="up@b4/.35" data-o="b5-.08"><h1 class="d" style="font-size:104px">الـ AI بيساعدك تفكّر..<br>ولا <span class="y">بيفكّر بدالك؟</span> 🤖</h1></div>
+      <div class="abs cx" data-a="up@b5/.35"><h1 class="d" style="font-size:104px">امتحان من غير<br><span class="y">ملخصات</span> ولا ليلة امتحان 📜</h1></div>
+    </div>
+    <div class="abs" style="left:240px;top:620px;width:600px;height:848px">
+      <div class="abs deck" data-k="0" style="inset:0"><div class="abs" style="inset:0" data-a="card@b2/.55" data-r="-5"><div class="pcard"><img src="assets/pages/p06.webp"></div><div class="num">02</div><div class="topic">قضايا جدلية</div></div></div>
+      <div class="abs deck" data-k="1" style="inset:0"><div class="abs" style="inset:0" data-a="card@b3/.55" data-r="4"><div class="pcard"><img src="assets/pages/p12.webp"></div><div class="num">03</div><div class="topic">صحتك وإنت بتذاكر</div></div></div>
+      <div class="abs deck" data-k="2" style="inset:0"><div class="abs" style="inset:0" data-a="card@b4/.55" data-r="-4"><div class="pcard"><img src="assets/pages/p19.webp"></div><div class="num">04</div><div class="topic">تكنولوجيا</div></div></div>
+      <div class="abs deck" data-k="3" style="inset:0"><div class="abs" style="inset:0" data-a="card@b5/.55" data-r="5"><div class="pcard"><img src="assets/pages/p03.webp"></div><div class="num">01</div><div class="topic">منهاج الطالب المسلم</div></div></div>
+    </div>
+  </div>
+
+  <!-- ===== S3 · The magazine ===== -->
+  <div class="scene" data-in="b6-.15" data-out="b7-.15">
+    <div class="abs cx" style="top:170px;z-index:6">
+      <div data-a="pop@b6/.35"><span class="pill">📒 العدد الأول · أكتوبر 2026</span></div>
+      <h1 class="d" data-a="up@b6+.1/.4" style="font-size:112px;margin-top:20px">الإجابات <span class="y">كلها هنا</span> 👇</h1>
+    </div>
+    <div class="abs book" style="left:220px;top:560px;width:640px;height:905px">
+      <div class="abs" style="inset:0" data-a="cover@b6+.05/.8"><div class="cover"><img src="assets/pages/p01.webp"><div class="sheen" id="sheen"></div><div class="spine"></div></div></div>
+    </div>
+  </div>
+
+  <!-- ===== S4 · Stats ===== -->
+  <div class="scene" data-in="b7-.15" data-out="b9-.15">
+    <div class="abs" style="top:300px;left:0;right:0;height:1260px;overflow:hidden" data-a="fade@b7/.5">
+      <div class="row abs" id="rowA" style="top:40px;right:0"></div>
+      <div class="row abs" id="rowB" style="top:400px;right:0"></div>
+      <div class="row abs" id="rowC" style="top:760px;right:0"></div>
+    </div>
+    <div class="abs cx" style="top:170px;z-index:6">
+      <div data-a="pop@b7/.35"><span class="pill">📒 العدد الأول</span></div>
+    </div>
+    <div class="abs cx" style="top:560px;z-index:6">
+      <div style="display:flex;justify-content:center;gap:26px">
+        <div class="stat" data-a="pop@b7+.35/.4"><b data-count="4" data-at="b7+.35">0</b><span>مقالات</span></div>
+        <div class="stat" data-a="pop@b7+1.0/.4"><b data-count="21" data-at="b7+1.0">0</b><span>صفحة</span></div>
+      </div>
+      <div class="stat" data-a="pop@b8/.4" style="width:626px;margin:26px auto 0;display:flex;align-items:center;justify-content:center;gap:24px"><b style="font-size:170px" data-count="20" data-at="b8">0</b><span style="font-size:52px;text-align:right;line-height:1.3">دقيقة قراية<br><span class="y">بس ⏱</span></span></div>
+    </div>
+  </div>
+
+  <!-- ===== S5 · Quiz + badges ===== -->
+  <div class="scene" data-in="b9-.15" data-out="b10-.15">
+    <div class="abs cx" style="top:150px;z-index:6">
+      <h1 class="d" data-a="up@b9/.4" style="font-size:100px">اختبر نفسك.. <span class="y">واجمع شارات</span> 🏆</h1>
+    </div>
+    <div class="abs qcard" style="left:60px;right:60px;top:420px" data-a="rise@b9+.05/.5">
+      <div class="eb">تذاكر بعقلك..</div>
+      <h3>اختبر نفسك</h3>
+      <div class="qn">سؤال 2 من 2</div>
+      <div class="qt">شاشة اللابتوب المفروض تكون فين؟</div>
+      <div class="opt">على الطاولة زي ما هي</div>
+      <div class="opt" id="okOpt">عند مستوى العين أو أسفله قليلًا<em id="okM" style="opacity:0">✔</em></div>
+      <div class="opt">على رجلك وإنت قاعد</div>
+    </div>
+    <div class="abs cx" style="top:1340px">
+      <div class="badges">
+        <div class="badge" data-badge="b9+1.4">📜</div><div class="badge" data-badge="b9+1.65">🧠</div><div class="badge" data-badge="b9+1.9">🪑</div><div class="badge" data-badge="b9+2.15">🤖</div><div class="badge" data-badge="b9+2.4">🎯</div><div class="badge" data-badge="b9+2.65">🏆</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== S6 · Stop the scroll ===== -->
+  <div class="scene" data-in="b10-.15" data-out="b11-.1">
+    <div class="abs phone" style="left:240px;top:330px" data-a="zoom@b10-.1/.4" id="ph2"><div class="notch"></div><div class="feed" id="feed2"></div><div class="dim" id="dim2"></div>
+      <div class="abs cx" style="top:820px;z-index:4;font-size:170px" data-a="pop@b10+.55/.4">🔒</div></div>
+    <div class="abs cx" style="top:640px;z-index:6">
+      <h1 class="d" data-a="zoom@b10/.35" style="font-size:200px">اقفل ✋</h1>
+      <h1 class="d y" data-a="zoom@b10+.25/.35" style="font-size:150px;margin-top:-20px">الاسكرول</h1>
+    </div>
+  </div>
+
+  <!-- ===== S7 · Turn the page / CTA ===== -->
+  <div class="scene" data-in="b11-.1" data-out="999">
+    <div class="abs ringc2" style="left:180px;top:250px" data-a="zoom@b11/.5" id="rg2"></div>
+    <div class="abs ringc" style="left:230px;top:300px" data-a="zoom@b11/.5"></div>
+    <div class="abs book" style="left:330px;top:380px;width:420px;height:594px" data-a="pop@b11+.1/.45">
+      <div class="abs under" style="inset:0;border-radius:6px 16px 16px 6px;overflow:hidden;box-shadow:0 40px 90px rgba(0,0,0,.6)"><img src="assets/pages/p02.webp"></div>
+      <div class="leaf" data-a="flip@b11+.55/1.0"><div class="f"><img src="assets/pages/p01.webp"></div><div class="b"><img src="assets/pages/p03.webp"></div></div>
+    </div>
+    <div class="abs cx" style="top:1030px;z-index:6">
+      <h1 class="d" data-a="up@b11+.2/.4" style="font-size:150px">قلّب <span class="y">الصفحة</span></h1>
+      <div data-a="pop@b11+.9/.45" style="margin-top:30px"><span class="cta">📖 اقرا العدد الأول</span></div>
+      <div data-a="up@b11+1.3/.4" style="margin-top:34px;font-weight:700;font-size:36px;color:var(--mute)">مجلة فريق العلم والعمل · <span style="font-family:var(--display);color:#fff;letter-spacing:2px">LAT MAGAZINE 2026</span></div>
+    </div>
+  </div>
+
+  <!-- captions (filled from script.json via TIMINGS.caps) -->
+  <div class="abs" id="capbox" data-a="up@.1/.35"></div>
+  <div class="vig"></div>
+</div>
+
+<script>
+const DEFAULT={lead:.2,gap:.26,tail:1.7,beats:[1.2,2.2,2.3,2.9,2.7,2.5,2.7,1.7,3.3,1.5,2.4]};
+const TM=window.TIMINGS||(()=>{let t=DEFAULT.lead;const o={};DEFAULT.beats.forEach((d,i)=>{o['b'+(i+1)]=[t,d];t+=d+DEFAULT.gap});o.total=t-DEFAULT.gap+DEFAULT.tail;return o})();
+const TOTAL=TM.total, CAPS=window.CAPS||[];
+const at=s=>{s=String(s).trim();const m=s.match(/^(b\d+)(e?)([+-][\d.]+)?$/);if(!m)return parseFloat(s);const b=TM[m[1]];return b[0]+(m[2]?b[1]:0)+(m[3]?parseFloat(m[3]):0)};
+
+const E='cubic-bezier(.2,.9,.25,1)';
+const P={
+ pop:[{opacity:0,transform:'scale(.55)'},{opacity:1,transform:'scale(1.08)',offset:.65},{opacity:1,transform:'scale(1)'}],
+ up:[{opacity:0,transform:'translateY(70px)'},{opacity:1,transform:'none'}],
+ rise:[{opacity:0,transform:'translateY(300px)'},{opacity:1,transform:'none'}],
+ fade:[{opacity:0},{opacity:1}],
+ zoom:[{opacity:0,transform:'scale(1.4)',filter:'blur(16px)'},{opacity:1,transform:'none',filter:'blur(0)'}],
+ cover:[{opacity:0,transform:'translateY(200px) rotateY(-35deg) rotateX(8deg) scale(.8)'},{opacity:1,transform:'rotateY(-12deg) rotateX(4deg)'}],
+ flip:[{transform:'rotateY(0deg)'},{transform:'rotateY(-165deg)'}],
+};
+const anims=[];
+function add(el,kf,start,dur,ease,fill){const a=el.animate(kf,{duration:dur*1000,delay:start*1000,fill:fill||'both',easing:ease||E});a.pause();anims.push(a);return a}
+
+document.querySelectorAll('.scene').forEach(s=>{
+  s.style.position='absolute';s.style.inset='0';
+  add(s,[{opacity:0},{opacity:1}],Math.max(0,at(s.dataset.in)),.25,'linear');
+  add(s,[{opacity:1,transform:'none',filter:'blur(0)'},{opacity:0,transform:'scale(.94)',filter:'blur(10px)'}],at(s.dataset.out),.3,'ease-in','forwards');
+});
+document.querySelectorAll('[data-a]').forEach(el=>{
+  const [name,rest]=el.dataset.a.split('@');const [t,d]=rest.split('/');
+  let kf=P[name];
+  if(name==='card'){const r=+el.dataset.r;kf=[{opacity:0,transform:`translate(${r>0?-500:500}px,700px) rotate(${r*6}deg)`},{opacity:1,transform:`rotate(${r}deg)`}]}
+  add(el,kf,at(t),parseFloat(d),E,name==='flip'?'both':undefined);
+  if(el.dataset.o)add(el,[{opacity:1},{opacity:0}],at(el.dataset.o),.25,'ease-in','forwards');
+});
+/* deck: older cards get pushed back each time a new one lands */
+const deck=[...document.querySelectorAll('.deck')],deckT=['b2','b3','b4','b5'];
+deck.forEach((c,k)=>{for(let j=k+1;j<deck.length;j++){const a=j-k-1,b=j-k;
+  const st=n=>`translateY(${-n*46}px) scale(${1-n*.07})`;
+  add(c,[{transform:st(a),filter:`brightness(${1-a*.3})`},{transform:st(b),filter:`brightness(${1-b*.3})`}],at(deckT[j]),.5,E,'forwards')}});
+
+/* captions */
+const capbox=document.getElementById('capbox');
+CAPS.forEach(c=>{const d=document.createElement('div');d.className='cap';d.innerHTML='<div>'+c.html+'</div>';capbox.appendChild(d);
+  add(d,[{opacity:0,transform:'translateY(24px)'},{opacity:1,transform:'none'}],at(c.id)-.05,.25,E);
+  const nx=CAPS[CAPS.indexOf(c)+1];add(d,[{opacity:1},{opacity:0}],nx?at(nx.id)-.12:TOTAL+5,.12,'linear','forwards')});
+
+/* phones */
+const COLS=['linear-gradient(135deg,#ff8a3d,#ffc24a)','linear-gradient(135deg,#ff4d8d,#ff9a7a)','linear-gradient(135deg,#16b6a6,#3be3b0)','linear-gradient(135deg,#6a5cff,#b06cff)','linear-gradient(135deg,#1f8fff,#37d0ff)','linear-gradient(135deg,#ff5f5f,#ffb547)'];
+const IC=['↗ 💬 🔥','↗ 💬 😂','↗ 💬 👍','↗ 💬 😮'];
+function feed(id){const f=document.getElementById(id);let h='';for(let i=0;i<14;i++)h+=`<div class="post" style="background:${COLS[i%6]}"><i style="width:55%"></i><span class="av"></span><div class="img"></div><span class="ic">${IC[i%4]}</span></div>`;f.innerHTML=h}
+feed('feed1');feed('feed2');
+/* page rows */
+const pg=n=>`assets/pages/p${String(n).padStart(2,'0')}.webp`;
+['rowA','rowB','rowC'].forEach((id,k)=>{let h='';for(let r=0;r<2;r++)for(let i=1;i<=21;i++)h+=`<img src="${pg(((i+k*7-1)%21)+1)}">`;document.getElementById(id).innerHTML=h});
+
+const dyn=[];const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));const easeOut=x=>1-Math.pow(1-x,3);
+dyn.push(t=>{
+  const G=document.getElementById('glow');G.style.transform=`translate(${Math.sin(t*.4)*60}px,${Math.cos(t*.3)*80}px) scale(${1+Math.sin(t*.7)*.04})`;
+  const P1=426;document.getElementById('feed1').style.transform=`translateY(${-((t*520)%(P1*6))}px)`;
+  const t2=t-at('b10-.2'),s2=Math.max(0,Math.min(t2,.55));document.getElementById('feed2').style.transform=`translateY(${-(s2*1500+400)}px)`;
+  document.getElementById('dim2').style.background=`rgba(4,9,19,${clamp((t-at('b10+.45'))/.3)*.75})`;
+  document.getElementById('sheen').style.backgroundPosition=`${120-clamp((t-at('b6+.7'))/1.1)*240}% 0`;
+  document.getElementById('rowA').style.transform=`translateX(${(t-at('b7'))*90}px)`;
+  document.getElementById('rowB').style.transform=`translateX(${-(t-at('b7'))*90-1500}px)`;
+  document.getElementById('rowC').style.transform=`translateX(${(t-at('b7'))*90-700}px)`;
+  document.getElementById('rg2').style.rotate=(t*20)+'deg';
+  document.querySelectorAll('[data-count]').forEach(c=>{const q=easeOut(clamp((t-at(c.dataset.at))/.8));c.textContent=Math.round(+c.dataset.count*q).toLocaleString('ar-EG')});
+  const ok=t>=at('b9+1.0'),o=document.getElementById('okOpt');o.style.borderColor=ok?'#1f9a5c':'#d9d2c2';o.style.background=ok?'#e3f6ea':'#fff';document.getElementById('okM').style.opacity=ok?1:0;
+  document.querySelectorAll('[data-badge]').forEach(b=>{const on=t>=at(b.dataset.badge);const k=clamp((t-at(b.dataset.badge))/.3);
+    b.style.background=on?'radial-gradient(circle at 35% 30%,#ffc067,#f59a2c)':'rgba(243,223,184,.08)';b.style.borderStyle=on?'solid':'dashed';b.style.borderColor=on?'rgba(245,184,52,.8)':'rgba(243,223,184,.25)';
+    b.style.boxShadow=on?'0 10px 30px rgba(245,154,44,.45)':'none';b.style.filter=on?'none':'grayscale(1) opacity(.5)';b.style.transform=`scale(${on?1+Math.sin(k*Math.PI)*.2:1})`});
+});
+
+window.TOTAL=TOTAL;
+window.seek=t=>{anims.forEach(a=>a.currentTime=t*1000);dyn.forEach(f=>f(t))};
+window.ready=Promise.all([document.fonts.ready,...[...document.images].map(i=>i.decode().catch(()=>{}))]).then(()=>{seek(0);return true});
+
+if(!window.RENDER){
+  const st=document.getElementById('stage');const fit=()=>{const s=Math.min(innerWidth/1080,innerHeight/1920);st.style.transform=`scale(${s})`;document.body.style.height=innerHeight+'px';document.body.style.overflow='hidden'};
+  addEventListener('resize',fit);fit();
+  window.ready.then(()=>{let t0=performance.now();const loop=()=>{let t=(performance.now()-t0)/1000;if(t>TOTAL+.8)t0=performance.now();seek(Math.min(t,TOTAL));requestAnimationFrame(loop)};loop()});
+}
+</script>
+</body>
+</html>
