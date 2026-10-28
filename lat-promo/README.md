@@ -9,9 +9,11 @@
 ### الطريقة الأولى: الـ API
 ```bash
 export GEMINI_API_KEY=...          # من https://aistudio.google.com/apikey
-python3 tts_gemini.py              # بيطلّع audio/b1.wav … audio/b11.wav
+python3 tts_gemini.py              # طلب واحد للسكريبت كله، وبيتقسم على السكتات لـ audio/b1.wav … audio/b11.wav
 node render.js                     # بيطلّع out/lat-reel.mp4 والمشاهد متظبطة على طول كل جملة
 ```
+
+> الـ free tier بيسمح بـ 10 طلبات بس في اليوم لكل موديل، عشان كده السكريبت بيستخدم طلب واحد. ولو عايز طلب لكل جملة: `python3 tts_gemini.py --per-line`.
 
 ### الطريقة التانية: من موقع AI Studio بإيدك
 1. ادخل aistudio.google.com، وبعدها **Generate speech**، واختار موديل TTS.
