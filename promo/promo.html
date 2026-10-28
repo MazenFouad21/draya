@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>دراية · برومو</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=JetBrains+Mono:wght@600;700&family=Amiri+Quran&display=swap" rel="stylesheet">
+<style>
+:root{
+  --teal:#1AC4C1; --lime:#8DDD60; --green:#2E9E4A;
+  --teal-50:#E8FAF9; --lime-50:#F1FBEA; --green-50:#E7F5EA;
+  --ink:#16323A; --muted:#5B7078; --line:#DCEBEA;
+  --bg:#F6FBFA; --card:#FFFFFF; --red:#E5484D; --amber:#F5A524; --purple:#7C5CFF;
+  --shadow:0 18px 50px -18px rgba(22,50,58,.28);
+  --gold:#F2C230; --silver:#B8C4CC; --bronze:#C98A4B;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#0d1d22}
+body{font-family:'Cairo',sans-serif;color:var(--ink)}
+#stage{position:relative;width:1080px;height:1920px;overflow:hidden;background:var(--bg);transform-origin:0 0}
+.abs{position:absolute}
+.cx{left:0;right:0;text-align:center}
+.grad{background:linear-gradient(90deg,var(--green),var(--teal));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hl{background:linear-gradient(transparent 58%,rgba(141,221,96,.6) 58%);padding:0 .12em;border-radius:6px}
+.ayah{font-family:'Amiri Quran',serif}
+.amark{color:var(--green);font-size:.8em;margin:0 .12em}
+.mono{font-family:'JetBrains Mono',monospace}
+.en{font-family:'JetBrains Mono',monospace;color:#3d6b73;font-weight:600;direction:ltr;unicode-bidi:isolate}
+
+/* background */
+.blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.55}
+.dots{position:absolute;inset:0;background-image:radial-gradient(rgba(26,196,193,.16) 2px,transparent 2.5px);background-size:44px 44px;mask-image:linear-gradient(180deg,#000,transparent 70%);-webkit-mask-image:linear-gradient(180deg,#000,transparent 70%)}
+
+/* shared ui */
+.kicker{display:inline-flex;align-items:center;gap:12px;background:var(--lime-50);color:var(--green);font-weight:800;padding:12px 30px;border-radius:999px;font-size:34px;border:2px solid #d9f2c8}
+.card{background:var(--card);border:2px solid var(--line);border-radius:44px;box-shadow:var(--shadow)}
+.h1{font-weight:900;line-height:1.25;margin:0}
+.sub{font-weight:700;color:var(--muted)}
+.logo-sq{border-radius:24px;background:linear-gradient(135deg,var(--teal),var(--lime));color:#fff;font-weight:900;display:grid;place-items:center;box-shadow:var(--shadow)}
+
+.topbar{left:40px;right:40px;top:70px;height:116px;border-radius:36px;background:rgba(255,255,255,.86);border:2px solid var(--line);display:flex;align-items:center;gap:22px;padding:0 22px;box-shadow:var(--shadow)}
+.topbar .logo-sq{width:76px;height:76px;font-size:40px}
+.topbar b{display:block;font-size:34px;line-height:1.1}
+.topbar small{color:var(--muted);font-size:22px;font-weight:600}
+.pill{margin-inline-start:auto;background:var(--teal-50);color:#0f7d7b;border:2px solid #bfeeed;padding:10px 26px;border-radius:999px;font-weight:800;font-size:28px;white-space:nowrap}
+
+.pbarw{left:60px;right:60px;bottom:64px;height:16px;background:var(--line);border-radius:99px;overflow:hidden}
+.pbarw i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--lime),var(--teal));border-radius:99px;margin-inline-start:auto}
+
+/* S1 */
+.bgayat{left:-40px;right:-40px;top:0;font-size:120px;line-height:2.1;color:var(--green);opacity:.10;text-align:center;filter:blur(2px)}
+.qm{position:absolute;font-weight:900;font-size:110px}
+
+/* orbit */
+.orbit{position:absolute;width:520px;height:520px}
+.ring{position:absolute;border-radius:50%;border:4px dashed var(--teal);opacity:.6}
+.ring.r1{inset:10%}
+.ring.r2{inset:0;border-color:var(--lime);border-style:dotted;border-width:5px}
+.ring b{position:absolute;width:84px;height:84px;margin:-42px;border-radius:50%;background:#fff;box-shadow:var(--shadow);display:grid;place-items:center;font-size:42px;border:2px solid var(--line)}
+.core{position:absolute;inset:22%;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--lime));display:grid;place-items:center;color:#fff;box-shadow:0 40px 90px -25px rgba(26,196,193,.75)}
+.core span{font-weight:900;font-size:92px;line-height:1}
+.strike{position:relative;display:inline-block;color:var(--muted)}
+.strike i{position:absolute;right:-8px;top:52%;height:12px;width:calc(100% + 16px);background:var(--red);border-radius:9px;transform-origin:right center}
+.duo{display:flex;justify-content:center;align-items:center;gap:34px}
+.duo .card{padding:34px 50px;font-size:64px;font-weight:900;display:flex;flex-direction:column;align-items:center;gap:6px;border-radius:40px}
+.duo .card small{font-size:26px}
+.arrow{font-size:70px;color:var(--teal);font-weight:900}
+
+/* mushaf */
+.mushaf{background:#fffdf7;border:3px solid #e9dfc0;border-radius:44px;padding:34px 46px;text-align:justify;font-family:'Amiri Quran',serif;font-size:56px;line-height:2.15;box-shadow:var(--shadow)}
+.mushaf .bas{display:block;text-align:center;color:var(--green);margin-bottom:4px}
+.m-ayah{border-radius:18px;padding:0 8px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.finger{font-size:110px;filter:drop-shadow(0 12px 14px rgba(0,0,0,.25));z-index:5}
+.ripple{width:150px;height:150px;border-radius:50%;border:8px solid var(--teal);z-index:4}
+.player{display:flex;align-items:center;gap:22px;padding:20px 30px;border-radius:999px;background:var(--ink);color:#fff;box-shadow:var(--shadow)}
+.player .t{font-weight:800;font-size:30px;white-space:nowrap}
+.player .t small{display:block;font-weight:600;font-size:22px;color:#9fd9d6}
+.wave{display:flex;gap:7px;align-items:center;height:70px;flex:1;justify-content:center}
+.wave i{display:block;width:9px;border-radius:9px;background:linear-gradient(var(--lime),var(--teal));height:20px}
+.pbtn{width:72px;height:72px;border-radius:50%;background:var(--teal);display:grid;place-items:center;font-size:32px;flex:none}
+
+.panel{padding:30px 34px}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:var(--bg);border:2px solid var(--line);border-radius:28px;padding:8px;position:relative}
+.tabs span{border-radius:20px;padding:12px 6px;font-weight:800;color:var(--muted);font-size:29px;text-align:center;position:relative;z-index:1;white-space:nowrap}
+.tabs span.on{color:var(--ink)}
+.tabind{position:absolute;border-radius:20px;background:#fff;box-shadow:var(--shadow);z-index:0}
+.simple{background:var(--lime-50);border:2px solid #d9f2c8;border-radius:28px;padding:22px 28px;font-weight:800;font-size:36px;line-height:1.75;margin-top:22px}
+.wchips{display:flex;flex-wrap:wrap;gap:14px;margin-top:20px;justify-content:center}
+.wchips span{background:#fff;border:2px solid var(--line);border-radius:999px;padding:10px 24px;font-size:31px;font-weight:700;box-shadow:0 8px 20px -12px rgba(22,50,58,.3)}
+.wchips b{color:var(--green);font-family:'Amiri Quran',serif;font-weight:400;font-size:1.1em}
+
+.pane-h{font-weight:900;font-size:36px;margin:24px 0 14px}
+.wasiya{background:#fffdf7;border:2px solid #e9dfc0;border-radius:28px;padding:24px 28px;font-weight:800;font-size:38px;line-height:1.75}
+.edit{border:3px dashed var(--teal);background:#fff;border-radius:28px;padding:24px 28px;font-weight:800;font-size:38px;line-height:1.75;min-height:200px}
+.caret{display:inline-block;width:5px;height:46px;background:var(--teal);vertical-align:middle;margin-inline-start:4px}
+.btn{display:inline-flex;align-items:center;gap:14px;border-radius:28px;padding:20px 46px;font-weight:900;font-size:40px;background:var(--green);color:#fff;box-shadow:0 10px 0 #217a37}
+.conf{position:absolute;width:20px;height:28px;border-radius:5px;z-index:9}
+
+/* game */
+.gcard{padding:40px 40px 46px}
+.ghead{display:flex;align-items:center;gap:20px;justify-content:space-between}
+.turn{background:var(--teal-50);border:2px solid #bfeeed;border-radius:999px;padding:12px 30px;font-weight:800;font-size:34px}
+.timer{position:relative;width:150px;height:150px;flex:none}
+.timer svg{transform:rotate(-90deg)}
+.timer circle{fill:none;stroke-width:14}
+.timer .bg{stroke:var(--line)}
+.timer .fg{stroke:var(--teal);stroke-linecap:round}
+.timer .num{position:absolute;inset:0;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:700;font-size:58px}
+.q{font-weight:900;font-size:50px;line-height:1.6;margin:30px 0 26px;text-align:center}
+.q .ayah{color:var(--green);font-weight:400}
+.opt{display:flex;align-items:center;gap:20px;border:3px solid var(--line);background:#fff;border-radius:28px;padding:22px 30px;font-weight:800;font-size:40px;margin-top:18px;position:relative}
+.opt .k{width:62px;height:62px;border-radius:18px;background:var(--bg);display:grid;place-items:center;font-family:'JetBrains Mono';font-size:30px;color:var(--muted);flex:none}
+.opt .ok{margin-inline-start:auto;font-size:44px}
+.plus{font-weight:900;font-size:76px;color:var(--green);z-index:6;text-shadow:0 6px 0 #fff}
+.streak{background:#fff4dc;border:2px solid #f6d58b;color:#b7791f;border-radius:999px;padding:10px 26px;font-weight:900;font-size:32px}
+
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:26px}
+.pod{width:270px;display:flex;flex-direction:column;align-items:center}
+.pod .av{width:150px;height:150px;border-radius:50%;display:grid;place-items:center;font-size:80px;background:#fff;border:6px solid var(--c);box-shadow:var(--shadow);position:relative}
+.pod .av em{position:absolute;top:-62px;font-style:normal;font-size:70px}
+.pod b{font-size:42px;margin-top:12px}
+.pod .sc{font-family:'JetBrains Mono';font-weight:700;color:var(--green);font-size:36px}
+.pod .col{width:100%;margin-top:16px;border-radius:30px 30px 0 0;background:linear-gradient(180deg,var(--c),color-mix(in srgb,var(--c) 55%,#fff));display:grid;place-items:start center;padding-top:20px;font-family:'JetBrains Mono';font-weight:700;font-size:72px;color:#fff;transform-origin:bottom}
+.lbrow{display:flex;align-items:center;gap:22px;padding:22px 32px;border-radius:30px;border:2px solid var(--line);background:#fff;font-size:38px;margin-top:16px;box-shadow:0 10px 26px -18px rgba(22,50,58,.35)}
+.lbrow .rk{font-family:'JetBrains Mono';font-weight:700;color:var(--muted);width:40px}
+.lbrow .nm{flex:1;font-weight:800}
+.lbrow .sc{font-family:'JetBrains Mono';font-weight:700;color:var(--green)}
+
+/* end */
+.chips{display:flex;gap:20px;white-space:nowrap}
+.chips span{background:#fff;border:2px solid var(--line);border-radius:999px;padding:14px 34px;font-size:38px;font-weight:800;box-shadow:0 10px 26px -18px rgba(22,50,58,.35)}
+.chips span.on{background:linear-gradient(135deg,var(--teal),var(--lime));color:#fff;border-color:transparent}
+.cta{display:inline-flex;align-items:center;gap:18px;border-radius:40px;padding:34px 80px;font-weight:900;font-size:60px;background:var(--teal);color:#fff;box-shadow:0 14px 0 #11928f}
+</style>
+</head>
+<body>
+<div id="stage">
+  <!-- background -->
+  <div class="blob" id="blobA" style="width:760px;height:760px;background:var(--teal);opacity:.28"></div>
+  <div class="blob" id="blobB" style="width:680px;height:680px;background:var(--lime);opacity:.30"></div>
+  <div class="dots"></div>
+
+  <!-- ===== S1 · Hook ===== -->
+  <div class="scene" data-in="0" data-out="b3-.25">
+    <div class="abs bgayat ayah" id="bgayat">وَالْعَصْرِ ﴿١﴾ إِنَّ الْإِنسَانَ لَفِي خُسْرٍ ﴿٢﴾ إِلَّا الَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِحَاتِ وَتَوَاصَوْا بِالْحَقِّ وَتَوَاصَوْا بِالصَّبْرِ ﴿٣﴾ وَالْعَصْرِ ﴿١﴾ إِنَّ الْإِنسَانَ لَفِي خُسْرٍ ﴿٢﴾ إِلَّا الَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِحَاتِ وَتَوَاصَوْا بِالْحَقِّ وَتَوَاصَوْا بِالصَّبْرِ ﴿٣﴾</div>
+    <div class="abs cx" style="top:560px">
+      <div data-a="pop@0/.45" style="font-size:150px">📖</div>
+      <h1 class="h1" data-a="up@.08/.45" style="font-size:118px;margin-top:10px">قريت السورة..</h1>
+      <h1 class="h1" data-a="zoom@b2/.5" style="font-size:168px;margin-top:6px">بس <span class="grad">فهمتها؟</span></h1>
+      <div class="sub" data-a="up@b2+.5/.45" style="font-size:44px;margin-top:26px">ولا كانت مجرد كلام بتحفظه؟</div>
+    </div>
+    <div class="qm grad" id="qm1" data-a="pop@b2+.2/.4" style="top:330px;right:120px">؟</div>
+    <div class="qm" id="qm2" data-a="pop@b2+.35/.4" style="top:1330px;left:110px;color:var(--lime)">؟</div>
+    <div class="qm" id="qm3" data-a="pop@b2+.5/.4" style="top:1450px;right:180px;color:var(--teal);font-size:80px">؟</div>
+    <div class="abs" data-a="pop@b2+.6/.5" style="top:300px;left:130px;font-size:120px" id="think">🤔</div>
+  </div>
+
+  <!-- persistent top bar -->
+  <div class="abs topbar" data-a="down@b3/.5">
+    <div class="logo-sq">د</div>
+    <div><b>دراية</b><small>قرآن دراية · Quran Dirayah</small></div>
+    <div class="pill">سورة العصر <span class="mono">103</span></div>
+  </div>
+
+  <!-- ===== S2 · Brand ===== -->
+  <div class="scene" data-in="b3-.15" data-out="b5-.25">
+    <div class="abs cx" style="top:280px"><span class="kicker" data-a="pop@b3/.45">📖 قرآن دراية · Quran Dirayah</span></div>
+    <div class="orbit" style="top:400px;left:280px" data-a="zoom@b3/.6">
+      <div class="ring r2" id="r2"><b style="top:50%;left:0">📖</b><b style="top:50%;left:100%">✨</b></div>
+      <div class="ring r1" id="r1"><b style="top:0;left:50%">💚</b><b style="top:100%;left:50%">🌿</b></div>
+      <div class="core"><span>دراية</span></div>
+    </div>
+    <div class="abs cx" style="top:990px">
+      <h1 class="h1" style="font-size:96px" data-a="up@b3+.25/.45">مش بس إنك <span class="strike">تقرا<i data-a="strike@b3+.9/.35"></i></span></h1>
+    </div>
+    <div class="abs cx" style="top:1190px">
+      <div class="duo">
+        <div class="card" data-a="right@b4/.45">🧠 <span class="grad">تفهم</span><small class="en">Knowledge</small></div>
+        <div class="arrow" data-a="pop@b4+.45/.35">⬅</div>
+        <div class="card" data-a="left@b4+.7/.45" style="border-color:#d9f2c8">🤲 <span style="color:var(--green)">تعمل</span><small class="en">Action</small></div>
+      </div>
+      <div class="sub" data-a="up@b4+1.1/.45" style="font-size:44px;margin-top:40px">العلم <span style="color:var(--teal)">+</span> العمل = <span class="hl" style="color:var(--ink)">دراية</span></div>
+    </div>
+  </div>
+
+  <!-- ===== S3 · Mushaf / listen / understand ===== -->
+  <div class="scene" data-in="b5-.15" data-out="b7-.25">
+    <div class="abs cx" style="top:236px;height:170px">
+      <div class="abs cx" data-a="up@b5/.4" data-o="b6-.1">
+        <h1 class="h1" style="font-size:76px">دوس على <span class="grad">أي آية</span> 👆</h1>
+        <div class="sub" style="font-size:38px">واسمعها بصوت الشيخ المنشاوي 🎧</div>
+      </div>
+      <div class="abs cx" data-a="up@b6/.4">
+        <h1 class="h1" style="font-size:76px">افهمها <span class="grad">ببساطة</span> 💡</h1>
+        <div class="sub" style="font-size:38px">التفسير + معنى كل كلمة</div>
+      </div>
+    </div>
+    <div class="abs" style="top:440px;left:50px;right:50px" data-a="up@b5-.05/.5" id="mushWrap">
+      <div class="mushaf" id="mushaf"><span class="bas">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</span><span class="m-ayah">وَالْعَصْرِ <span class="amark">﴿١﴾</span></span> <span class="m-ayah">إِنَّ الْإِنسَانَ لَفِي خُسْرٍ <span class="amark">﴿٢﴾</span></span> <span class="m-ayah" id="a3" data-a="sel@b5+.75/.35">إِلَّا الَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِحَاتِ وَتَوَاصَوْا بِالْحَقِّ وَتَوَاصَوْا بِالصَّبْرِ <span class="amark">﴿٣﴾</span></span></div>
+    </div>
+    <div class="abs ripple" id="ripple" data-a="ripple@b5+.7/.7" style="top:0;left:0"></div>
+    <div class="abs finger" id="finger" data-a="finger@b5+.1/1.0" data-o="b5+1.5" style="top:0;left:0">👆</div>
+    <div class="abs" style="left:70px;right:70px;top:1040px" data-a="up@b5+1.0/.45" id="playerWrap">
+      <div class="player"><div class="pbtn">⏸</div><div class="t">🔊 الآية ٣<small>الشيخ محمد صديق المنشاوي</small></div><div class="wave" id="wave"></div></div>
+    </div>
+    <div class="abs card panel" style="left:40px;right:40px;top:1200px" data-a="rise@b6-.05/.55">
+      <div class="tabs" id="tabs3"><div class="tabind" id="ind3"></div><span>📗 الميسر</span><span class="on">💡 ببساطة</span><span>🔤 الكلمات</span><span>❤️ ختمة محبة</span><span>📜 ختمة وصاية</span><span>🎯 نيّتي</span></div>
+      <div class="simple" data-a="up@b6+.35/.45">💡 الوقت بيعدّي.. وكل الناس خسرانة، <span class="hl">إلا</span> اللي آمن، وعمل الصالح، ووصّى صحابه بالحق والصبر.</div>
+      <div class="wchips">
+        <span data-a="pop@b6+1.2/.35"><b>الْعَصْر</b> = الوقت والزمن</span>
+        <span data-a="pop@b6+1.45/.35"><b>خُسْر</b> = خسارة</span>
+        <span data-a="pop@b6+1.7/.35"><b>تَوَاصَوْا</b> = وصّوا بعض</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== S4 · Wasiya / Niyya ===== -->
+  <div class="scene" data-in="b7-.15" data-out="b9-.25">
+    <div class="abs cx" style="top:236px;height:170px">
+      <div class="abs cx" data-a="up@b7/.4" data-o="b8-.1">
+        <h1 class="h1" style="font-size:80px">ربنا بيوصيني <span class="grad">بإيه؟</span> 📜</h1>
+        <div class="sub" style="font-size:38px">كل آية ليها وصية ليك انت</div>
+      </div>
+      <div class="abs cx" data-a="up@b8/.4">
+        <h1 class="h1" style="font-size:80px">وأنا ناوي <span class="grad">أعمل إيه؟</span> 🎯</h1>
+        <div class="sub" style="font-size:38px">من الفهم.. للعمل</div>
+      </div>
+    </div>
+    <div class="abs card panel" style="left:40px;right:40px;top:470px;padding:40px" data-a="rise@b7-.05/.55">
+      <div class="ayah" style="font-size:58px;color:var(--green);text-align:center;line-height:1.9">وَتَوَاصَوْا بِالْحَقِّ وَتَوَاصَوْا بِالصَّبْرِ <span class="amark">﴿٣﴾</span></div>
+      <div class="tabs" id="tabs4" style="margin-top:14px"><div class="tabind" id="ind4"></div><span>📗 الميسر</span><span>💡 ببساطة</span><span>🔤 الكلمات</span><span>❤️ ختمة محبة</span><span id="tw">📜 ختمة وصاية</span><span id="tn">🎯 نيّتي</span></div>
+      <div style="position:relative;min-height:560px">
+        <div class="abs" style="inset:0" data-a="up@b7+.5/.45" data-o="b8-.05">
+          <div class="pane-h">📜 ربنا بيوصيني بالآية دي بـ…</div>
+          <div class="wasiya">ماتمشيش في الخير لوحدك.. خُد صحابك معاك، <span class="hl">وصّيهم بالحق</span>، واصبروا مع بعض. 🤝</div>
+        </div>
+        <div class="abs" style="inset:0" data-a="up@b8/.4">
+          <div class="pane-h">🎯 ناوي تعمل إيه بعد ما فهمت؟</div>
+          <div class="edit"><span id="typed"></span><span class="caret" id="caret"></span></div>
+          <div style="text-align:center;margin-top:30px"><span class="btn" id="niyBtn" data-a="press@b8e-.35/.3">🤲 نويت · <span class="en" style="color:#fff">I intend</span></span></div>
+        </div>
+      </div>
+    </div>
+    <div id="confHost" class="abs" style="inset:0;pointer-events:none"></div>
+  </div>
+
+  <!-- ===== S5a · Challenge ===== -->
+  <div class="scene" data-in="b9-.15" data-out="b10-.2">
+    <div class="abs cx" style="top:236px">
+      <span class="kicker" data-a="pop@b9/.4">🏆 التحدي · The Challenge</span>
+      <h1 class="h1" style="font-size:74px;margin-top:16px" data-a="up@b9+.15/.4">تحدّي.. أسئلة.. <span class="grad">ونُقط</span> ⚡</h1>
+    </div>
+    <div class="abs card gcard" style="left:40px;right:40px;top:520px" data-a="rise@b9+.05/.5">
+      <div class="ghead">
+        <div class="turn">الدور على: <b>يوسف</b> 👤</div>
+        <div class="timer"><svg width="150" height="150"><circle class="bg" cx="75" cy="75" r="62"/><circle class="fg" id="tfg" cx="75" cy="75" r="62" stroke-dasharray="389.6" stroke-dashoffset="0"/></svg><div class="num" id="tnum">20</div></div>
+      </div>
+      <div class="q">يعني إيه <span class="ayah">﴿وَتَوَاصَوْا بِالْحَقِّ﴾</span>؟</div>
+      <div class="opt" data-a="left@b9+.45/.35"><span class="k">A</span>سكتوا عن الحق</div>
+      <div class="opt" id="optOk" data-a="left@b9+.6/.35"><span class="k" id="okK">B</span>وصّوا بعض بالحق<span class="ok" id="okMark" style="opacity:0">✔</span></div>
+      <div class="opt" data-a="left@b9+.75/.35"><span class="k">C</span>سافروا مع بعض</div>
+      <div style="display:flex;justify-content:center;gap:16px;margin-top:30px" data-a="pop@b9+2.1/.35"><span class="streak">🔥 تالت إجابة صح ورا بعض</span></div>
+    </div>
+    <div class="abs plus cx" id="plus" data-a="plusup@b9+1.7/1.0" style="top:1050px">+150 ⭐</div>
+  </div>
+
+  <!-- ===== S5b · Leaderboard ===== -->
+  <div class="scene" data-in="b10-.1" data-out="b11-.25">
+    <div class="abs cx" style="top:236px">
+      <span class="kicker" data-a="pop@b10/.4">🏆 لوحة أهل القرآن · Final board</span>
+      <h1 class="h1" style="font-size:84px;margin-top:16px" data-a="up@b10+.1/.4">لوحة <span class="grad">أهل القرآن</span></h1>
+    </div>
+    <div class="abs cx" style="top:640px">
+      <div class="podium">
+        <div class="pod" style="--c:var(--silver)" data-a="up@b10+.35/.4"><div class="av">🧑</div><b>عمر</b><span class="sc" data-count="910" data-at="b10+.4">0</span><div class="col" style="height:250px" data-a="grow@b10+.35/.5">2</div></div>
+        <div class="pod" style="--c:var(--gold)" data-a="up@b10+.2/.4"><div class="av"><em data-a="pop@b10+.9/.4">👑</em>😄</div><b>يوسف</b><span class="sc" data-count="980" data-at="b10+.25">0</span><div class="col" style="height:340px" data-a="grow@b10+.2/.5">1</div></div>
+        <div class="pod" style="--c:var(--bronze)" data-a="up@b10+.5/.4"><div class="av">🙂</div><b>مالك</b><span class="sc" data-count="860" data-at="b10+.55">0</span><div class="col" style="height:190px" data-a="grow@b10+.5/.5">3</div></div>
+      </div>
+    </div>
+    <div class="abs" style="left:70px;right:70px;top:1500px">
+      <div class="lbrow" data-a="up@b10+.75/.35"><span class="rk">4</span><span class="nm">آدم</span><span>📋 ٦ أعمال</span><span class="sc">790</span></div>
+      <div class="lbrow" data-a="up@b10+.9/.35"><span class="rk">5</span><span class="nm">زياد</span><span>📋 ٥ أعمال</span><span class="sc">720</span></div>
+    </div>
+  </div>
+
+  <!-- ===== S6 · End / CTA ===== -->
+  <div class="scene" data-in="b11-.15" data-out="999">
+    <div class="orbit" style="top:250px;left:350px;width:380px;height:380px" data-a="zoom@b11/.55">
+      <div class="ring r2" id="r2b"><b style="top:50%;left:0">📖</b><b style="top:50%;left:100%">✨</b></div>
+      <div class="ring r1" id="r1b"><b style="top:0;left:50%">💚</b><b style="top:100%;left:50%">🌿</b></div>
+      <div class="core"><span style="font-size:66px">دراية</span></div>
+    </div>
+    <div class="abs cx" style="top:700px">
+      <h1 class="h1" style="font-size:80px" data-a="up@b11+.1/.45">سورة جديدة <span class="grad">كل أسبوع</span> 📅</h1>
+    </div>
+    <div class="abs" style="top:850px;left:0;right:0;height:110px;overflow:hidden" data-a="fade@b11+.3/.4">
+      <div class="chips abs" id="chips" style="top:12px;right:0"><span class="on">العصر</span><span>الكوثر</span><span>الإخلاص</span><span>الفلق</span><span>الناس</span><span>الفيل</span><span>قريش</span><span>الماعون</span><span>الكافرون</span><span>النصر</span><span>العصر</span><span>الكوثر</span><span>الإخلاص</span><span>الفلق</span><span>الناس</span><span>الفيل</span></div>
+    </div>
+    <div class="abs cx" style="top:1030px">
+      <h1 class="h1" style="font-size:150px" data-a="zoom@b11+1.3/.5">افهمها..</h1>
+      <h1 class="h1" style="font-size:150px" data-a="zoom@b11+1.9/.5"><span class="hl">وعيشها</span> 💚</h1>
+    </div>
+    <div class="abs cx" style="top:1520px">
+      <span class="cta" data-a="pop@b12/.45" id="cta">▶ ابدأ أول سورة</span>
+      <div class="sub" style="font-size:36px;margin-top:34px" data-a="up@b12+.4/.4">📖 قرآن دراية · نادي الفتيان</div>
+    </div>
+  </div>
+
+  <div class="abs pbarw"><i id="pbar"></i></div>
+</div>
+
+<script>
+/* ---------- timings (render.js injects real VO timings; this is the estimate) ---------- */
+const DEFAULT={lead:.25,gap:.28,tail:1.6,beats:[1.7,2.2,1.8,2.0,3.0,2.9,3.0,1.7,3.4,2.5,3.0,2.4]};
+const TM=window.TIMINGS||(()=>{let t=DEFAULT.lead;const o={};DEFAULT.beats.forEach((d,i)=>{o['b'+(i+1)]=[t,d];t+=d+DEFAULT.gap});o.total=t-DEFAULT.gap+DEFAULT.tail;return o})();
+const TOTAL=TM.total;
+const at=s=>{s=String(s).trim();const m=s.match(/^(b\d+)(e?)([+-][\d.]+)?$/);if(!m)return parseFloat(s);const b=TM[m[1]];return b[0]+(m[2]?b[1]:0)+(m[3]?parseFloat(m[3]):0)};
+
+/* ---------- keyframe presets ---------- */
+const E='cubic-bezier(.2,.9,.25,1)';
+const P={
+ pop:[{opacity:0,transform:'scale(.55)'},{opacity:1,transform:'scale(1.08)',offset:.65},{opacity:1,transform:'scale(1)'}],
+ up:[{opacity:0,transform:'translateY(70px)'},{opacity:1,transform:'none'}],
+ down:[{opacity:0,transform:'translateY(-70px)'},{opacity:1,transform:'none'}],
+ rise:[{opacity:0,transform:'translateY(260px)'},{opacity:1,transform:'none'}],
+ right:[{opacity:0,transform:'translateX(160px)'},{opacity:1,transform:'none'}],
+ left:[{opacity:0,transform:'translateX(-160px)'},{opacity:1,transform:'none'}],
+ fade:[{opacity:0},{opacity:1}],
+ zoom:[{opacity:0,transform:'scale(1.35)',filter:'blur(14px)'},{opacity:1,transform:'none',filter:'blur(0)'}],
+ strike:[{transform:'scaleX(0)'},{transform:'scaleX(1)'}],
+ grow:[{transform:'scaleY(0)'},{transform:'scaleY(1)'}],
+ sel:[{background:'transparent',boxShadow:'inset 0 0 0 0 transparent'},{background:'#E8FAF9',boxShadow:'inset 0 0 0 4px #1AC4C1'}],
+ ripple:[{opacity:0,transform:'scale(.2)'},{opacity:.9,transform:'scale(.5)',offset:.15},{opacity:0,transform:'scale(1.6)'}],
+ finger:[{opacity:0,transform:'translate(60px,140px)'},{opacity:1,transform:'none',offset:.55},{opacity:1,transform:'scale(.82)',offset:.7},{opacity:1,transform:'none'}],
+ press:[{transform:'none'},{transform:'translateY(8px) scale(.96)',boxShadow:'0 2px 0 #217a37'},{transform:'none'}],
+ plusup:[{opacity:0,transform:'translateY(40px) scale(.6)'},{opacity:1,transform:'translateY(-20px) scale(1.1)',offset:.3},{opacity:1,transform:'translateY(-60px)',offset:.75},{opacity:0,transform:'translateY(-120px)'}],
+};
+const anims=[];
+function add(el,kf,start,dur,ease,fill){const a=el.animate(kf,{duration:dur*1000,delay:start*1000,fill:fill||'both',easing:ease||E});a.pause();anims.push(a);return a}
+
+/* scenes */
+document.querySelectorAll('.scene').forEach(s=>{
+  s.style.position='absolute';s.style.inset='0';
+  add(s,[{opacity:0},{opacity:1}],Math.max(0,at(s.dataset.in)),.3,'linear');
+  add(s,[{opacity:1,transform:'none',filter:'blur(0)'},{opacity:0,transform:'scale(.94)',filter:'blur(10px)'}],at(s.dataset.out),.35,'ease-in','forwards');
+});
+document.querySelectorAll('[data-a]').forEach(el=>{
+  const [name,rest]=el.dataset.a.split('@');const [t,d]=rest.split('/');
+  add(el,P[name],at(t),parseFloat(d),name==='ripple'||name==='plusup'?'ease-out':E,name==='ripple'||name==='plusup'?'both':undefined);
+  if(el.dataset.o)add(el,[{opacity:1},{opacity:0}],at(el.dataset.o),.3,'ease-in','forwards');
+});
+
+/* finger + ripple position over ayah 3 (measured after fonts load) */
+function placeFinger(){
+  const st=document.getElementById('stage').getBoundingClientRect(),sc=st.width/1080;
+  const r=document.getElementById('a3').getClientRects()[0];
+  const x=(r.left-st.left)/sc+150,y=(r.top-st.top)/sc+60;
+  const f=document.getElementById('finger');f.style.left=(x-45)+'px';f.style.top=(y-10)+'px';
+  const rp=document.getElementById('ripple');rp.style.left=(x-75)+'px';rp.style.top=(y-75)+'px';
+}
+/* tab indicators */
+function placeInd(tabsId,indId,targets){
+  const tabs=document.getElementById(tabsId),ind=document.getElementById(indId),spans=tabs.querySelectorAll('span');
+  const pos=i=>{const s=spans[i];return {left:s.offsetLeft,top:s.offsetTop,width:s.offsetWidth,height:s.offsetHeight}};
+  const p0=pos(targets[0][0]);Object.assign(ind.style,{left:p0.left+'px',top:p0.top+'px',width:p0.width+'px',height:p0.height+'px'});
+  for(let k=1;k<targets.length;k++){const a=pos(targets[k-1][0]),b=pos(targets[k][0]);
+    add(ind,[{left:a.left+'px',top:a.top+'px'},{left:b.left+'px',top:b.top+'px'}],at(targets[k][1]),.35,E,'forwards')}
+  targets.forEach(([i,t],k)=>{const nx=targets[k+1];dyn.push(T=>spans[i].classList.toggle('on',T>=(k?at(t):-1)&&(!nx||T<at(nx[1]))))});
+}
+
+/* ---------- per-frame dynamics ---------- */
+const dyn=[];
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const easeOut=x=>1-Math.pow(1-x,3);
+const wave=document.getElementById('wave');for(let i=0;i<26;i++)wave.insertAdjacentHTML('beforeend','<i></i>');
+dyn.push(t=>{
+  document.getElementById('pbar').style.width=(clamp(t/TOTAL)*100)+'%';
+  const A=document.getElementById('blobA'),B=document.getElementById('blobB');
+  A.style.left=(-220+Math.sin(t*.45)*90)+'px';A.style.top=(-180+Math.cos(t*.35)*110)+'px';
+  B.style.left=(560+Math.cos(t*.4)*90)+'px';B.style.top=(1240+Math.sin(t*.5)*120)+'px';
+  document.getElementById('bgayat').style.transform=`translateY(${-t*60}px)`;
+  ['qm1','qm2','qm3','think'].forEach((id,k)=>document.getElementById(id).style.translate=`0 ${Math.sin(t*2.2+k)*14}px`);
+  const rot=t*22;['r1','r1b'].forEach(id=>document.getElementById(id).style.rotate=rot+'deg');['r2','r2b'].forEach(id=>document.getElementById(id).style.rotate=(-rot*.7)+'deg');
+  document.querySelectorAll('.r1 b').forEach(b=>b.style.rotate=(-rot)+'deg');document.querySelectorAll('.r2 b').forEach(b=>b.style.rotate=(rot*.7)+'deg');
+  // waveform
+  const on=t>at('b5+1.0');[...wave.children].forEach((b,i)=>{const h=on?18+Math.abs(Math.sin(t*7+i*.7)*Math.sin(t*3.1+i*.33))*52:18;b.style.height=h+'px'});
+  // typing niyya
+  const txt='ناوي أصلّي العصر في وقتها.. وآخد صاحبي معايا للمسجد 🤝';const chars=[...txt];
+  const p=clamp((t-at('b8+.35'))/(Math.max(.6,TM.b8[1]-.6)));document.getElementById('typed').textContent=chars.slice(0,Math.round(chars.length*p)).join('');
+  document.getElementById('caret').style.opacity=(Math.floor(t*2.5)%2||p<1)?1:0;
+  // timer
+  const t0=at('b9+.2'),stop=at('b9+1.6');const el=Math.max(0,Math.min(t,stop)-t0);const left=Math.max(0,20-el*3.2);
+  document.getElementById('tnum').textContent=Math.ceil(left);document.getElementById('tfg').style.strokeDashoffset=389.6*(1-left/20);
+  // correct answer
+  const ok=t>=at('b9+1.6');const o=document.getElementById('optOk');
+  o.style.background=ok?'var(--green-50)':'#fff';o.style.borderColor=ok?'var(--green)':'var(--line)';
+  document.getElementById('okK').style.background=ok?'var(--green)':'var(--bg)';document.getElementById('okK').style.color=ok?'#fff':'var(--muted)';
+  document.getElementById('okMark').style.opacity=ok?1:0;
+  // counters
+  document.querySelectorAll('[data-count]').forEach(c=>{const q=easeOut(clamp((t-at(c.dataset.at))/1.1));c.textContent=Math.round(+c.dataset.count*q)});
+  // chips marquee
+  document.getElementById('chips').style.transform=`translateX(${(t-at('b11'))*120}px)`;
+  // confetti
+  confetti(t);
+});
+
+const CONF=[];(function(){let s=7;const r=()=>(s=(s*16807)%2147483647)/2147483647;const cols=['#1AC4C1','#8DDD60','#2E9E4A','#F2C230','#7C5CFF','#E5484D'];
+  const host=document.getElementById('confHost');for(let i=0;i<70;i++){const d=document.createElement('i');d.className='conf';d.style.background=cols[i%cols.length];host.appendChild(d);
+  const a=r()*Math.PI*2,v=600+r()*900;CONF.push({d,vx:Math.cos(a)*v*.8,vy:-Math.abs(Math.sin(a))*v-400,spin:(r()-.5)*900})}})();
+function confetti(t){const t0=at('b8e-.2'),dt=t-t0;const btn={x:540,y:1450};
+  CONF.forEach(c=>{if(dt<0||dt>2.2){c.d.style.opacity=0;return}c.d.style.opacity=clamp(1-(dt-1.5)/.7);
+    c.d.style.left=(btn.x+c.vx*dt)+'px';c.d.style.top=(btn.y+c.vy*dt+1400*dt*dt)+'px';c.d.style.transform=`rotate(${c.spin*dt}deg)`})}
+
+/* ---------- seek ---------- */
+window.TOTAL=TOTAL;
+window.seek=t=>{anims.forEach(a=>a.currentTime=t*1000);dyn.forEach(f=>f(t))};
+window.ready=document.fonts.ready.then(()=>{
+  seek(at('b6-.3'));placeFinger();
+  placeInd('tabs3','ind3',[[1,'0']]);
+  placeInd('tabs4','ind4',[[4,'0'],[5,'b8']]);
+  seek(0);return true});
+
+/* browser preview: fit to window & play in real time (render.js sets RENDER) */
+if(!window.RENDER){
+  const st=document.getElementById('stage');const fit=()=>{const s=Math.min(innerWidth/1080,innerHeight/1920);st.style.transform=`scale(${s})`;document.body.style.height=innerHeight+'px';document.body.style.overflow='hidden'};
+  addEventListener('resize',fit);fit();
+  window.ready.then(()=>{let t0=performance.now();const loop=()=>{let t=(performance.now()-t0)/1000;if(t>TOTAL+.8)t0=performance.now();seek(Math.min(t,TOTAL));requestAnimationFrame(loop)};loop()});
+}
+</script>
+</body>
+</html>
