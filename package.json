@@ -1,0 +1,13 @@
+{
+  "name": "draya",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "shots": "node tools/screenshot.mjs dirayah-template.html",
+    "taste": "node .claude/skills/taste-skill/scripts/inspect.mjs dirayah-template.html --out shots/taste",
+    "impeccable": ".claude/skills/impeccable/scripts/impeccable"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0"
+  }
+}
