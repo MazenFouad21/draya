@@ -1,10 +1,10 @@
 # Draya: design workflow
 
-Main file: `dirayah-template.html`, a single-page shop template (look reference: https://infinity-5d5.pages.dev/#shop).
+Main file: `dirayah-template.html`, a teacher-led Quran lesson deck sold as a product. n8n replaces `/*__LESSON_JSON__*/null` and `/*__AYAT_JSON__*/null` with lesson data. Keep that data contract and every element ID the script uses.
 
 ## Design system
-- `design/stripe-DESIGN.md` is the visual language to follow: colors, type, radii, spacing, gradients and components. It comes from VoltAgent/awesome-design-md (MIT).
-  Use its tokens as CSS custom properties on `:root`. Don't copy Stripe's brand name or logo.
+- `DESIGN.md` is the source of truth for the look ("Bookcloth & gold"): tokens, type, motifs, components.
+- `design/stripe-DESIGN.md` is a craft reference only (precision of spacing, type scale, shadows). Don't apply its palette.
 
 ## Skills (`.claude/skills/`)
 | Skill | Use for |
@@ -15,11 +15,12 @@ Main file: `dirayah-template.html`, a single-page shop template (look reference:
 
 ## Playwright
 - MCP server: `.mcp.json` registers `@playwright/mcp` (headless) for browsing and interacting with pages.
-- `npm run shots` saves screenshots at widths 1440, 768 and 390 to `shots/`, and reports JS errors and horizontal overflow.
+- `npm run preview` builds `shots/preview.html` with sample data, and `npm run slides` screenshots every slide.
+- `npm run shots` saves screenshots of the preview at widths 1440, 768 and 390 to `shots/`, and reports JS errors and horizontal overflow.
 - `npm run taste` runs the taste-skill inspector. In the cloud, set
   `CHROME_PATH=/opt/pw-browsers/chromium-1243/chrome-linux64/chrome` first.
 
 ## Loop for every UI change
 1. Edit using the DESIGN.md tokens.
-2. Run `npm run shots` and look at all three widths.
+2. Run `npm run preview && npm run shots` and look at all three widths.
 3. Check the result against web-design-guidelines and the impeccable audit.

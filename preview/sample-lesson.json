@@ -1,0 +1,37 @@
+{
+  "ayat": [
+    {"text":"قُلْ هُوَ ٱللَّهُ أَحَدٌ","en":"Say, He is Allah, the One.","muyassar":"[نص تجريبي] قل يا محمد: هو الله المتفرد بالألوهية والربوبية والأسماء والصفات، لا يشاركه أحد فيها.","g":6222},
+    {"text":"ٱللَّهُ ٱلصَّمَدُ","en":"Allah, the Eternal Refuge.","muyassar":"[نص تجريبي] الله وحده المقصود في قضاء الحوائج والرغائب.","g":6223},
+    {"text":"لَمْ يَلِدْ وَلَمْ يُولَدْ","en":"He neither begets nor is born.","muyassar":"[نص تجريبي] ليس له ولد ولا والد ولا صاحبة.","g":6224},
+    {"text":"وَلَمْ يَكُن لَّهُۥ كُفُوًا أَحَدٌۢ","en":"Nor is there to Him any equivalent.","muyassar":"[نص تجريبي] ولم يكن له مماثلًا ولا مشابهًا أحد من خلقه.","g":6225}
+  ],
+  "lesson": {
+    "meta":{"number":112,"surah_ar":"الإخلاص","surah_en":"Al-Ikhlas","surah_en_meaning":"Sincerity","type_ar":"مكية","type_en":"Meccan","juz":30,"other_name_ar":"التوحيد","other_name_en":"At-Tawhid","tagline_ar":"سورة قصيرة بتعرّفنا <hl>مين هو ربنا</hl>","title_emoji":"💚","orbit_emojis":["☝️","💚","🌙","✨"],
+      "fact_cards":[{"value":"ثلث القرآن","label_ar":"تعدل","label_en":"Equals a third of the Quran"}]},
+    "guiding_question":{"ar":"لو حد سألك: <grad>مين ربنا؟</grad> هتقوله إيه؟","en":"If someone asked you who your Lord is, what would you say?","emojis":["🤔","☝️","💚"]},
+    "objectives":[{"ar":"أقرأ السورة قراءة صحيحة","en":"Recite the surah correctly"},{"ar":"أشرح معنى «الصمد» بكلامي","en":"Explain “As-Samad” in my own words"},{"ar":"أفرّق بين الخالق والمخلوق","en":"Tell the Creator apart from the created"},{"ar":"أنوي أقرأها كل يوم","en":"Intend to recite it daily"}],
+    "story":{"ar":"سأل المشركون النبي ﷺ: صِف لنا ربك، فنزلت السورة.","en":"The idolaters asked the Prophet ﷺ to describe his Lord, so the surah was revealed.","source":"سنن الترمذي"},
+    "parts":[
+      {"from":1,"to":2,"tag_ar":"ربنا واحد","tag_en":"Allah is One","timeline_title":"ربنا واحد","kicker_emoji":"☝️","headline_ar":"ربنا <grad>واحد</grad> وكلنا محتاجينه","headline_en":"Allah is One, and we all need Him",
+       "interactive":{"type":"flip","prompt_ar":"اقلب الكروت: مين بنحتاجه؟","prompt_en":"Flip the cards: who do we need?","done_ar":"كل حاجة محتاجة ربنا، وربنا مش محتاج حد 💚","done_en":"Everything needs Allah; Allah needs no one",
+        "items":[{"emoji":"🌧️","label_ar":"المطر","text_ar":"ربنا اللي بينزّله","text_en":"Allah sends it down"},{"emoji":"🍞","label_ar":"الأكل","text_ar":"ربنا اللي بيرزقنا","text_en":"Allah provides it"},{"emoji":"🩺","label_ar":"الشفا","text_ar":"ربنا اللي بيشفي","text_en":"Allah heals"},{"emoji":"🤲","label_ar":"الدعاء","text_ar":"بنطلب من ربنا بس","text_en":"We ask Allah alone"}]}},
+      {"from":3,"to":4,"tag_ar":"مفيش زيه","tag_en":"None like Him","timeline_title":"مفيش زيه","kicker_emoji":"✨","headline_ar":"ربنا <grad>مفيش حد زيه</grad>","headline_en":"There is none like Allah",
+       "interactive":{"type":"choice","prompt_ar":"اختار الجملة الصح","prompt_en":"Pick the true sentence","done_ar":"برافو! ربنا مالوش شبيه","done_en":"Well done! Allah has no equal",
+        "items":[{"emoji":"✅","label_ar":"ربنا مالوش شبيه","verdict":"ok","text_ar":"صح، دي معنى «ولم يكن له كفوًا أحد»","text_en":"Correct"},{"emoji":"❌","label_ar":"ربنا ليه ولد","verdict":"no","text_ar":"لأ، «لم يلد ولم يولد»","text_en":"No"},{"emoji":"🤔","label_ar":"ربنا زي الملوك","verdict":"mid","text_ar":"الملوك محتاجين، ربنا مش محتاج","text_en":"Kings are needy; Allah is not"}]}}
+    ],
+    "simple":[{"ar":"ربنا واحد بس.","en":"Allah is only One."},{"ar":"كل الناس بيحتاجوا ربنا.","en":"Everyone needs Allah."},{"ar":"ربنا مالوش أب ولا ابن.","en":"Allah has no parent or child."},{"ar":"مفيش أي حد زي ربنا.","en":"Nothing is like Allah."}],
+    "words":{"1":[["أَحَدٌ","واحد مالوش شريك","One, without partner"]],"2":[["ٱلصَّمَدُ","اللي الكل بيقصده في حاجته","The one everyone turns to"]],"4":[["كُفُوًا","مثيل أو شبيه","Equal"]]},
+    "mahabba":{"1":[["اسم","الله","الاسم الأعظم لربنا","Allah’s greatest name"],["صفة","الأحد","واحد في كل حاجة","One in every way"]],"2":[["اسم","الصمد","الكل بيرجعله","Everyone returns to Him"]]},
+    "niyya":[{"ar":"هقول «الله أحد» بقلبي كل صباح","en":"I will affirm “Allah is One” every morning"},{"ar":"هدعي ربنا قبل ما أطلب من حد","en":"I will ask Allah before anyone"},{"ar":"هشكر ربنا على نعمه","en":"I will thank Allah for His blessings"},{"ar":"هقرأ السورة قبل النوم","en":"I will recite it before sleep"}],
+    "wasiya":{},
+    "vocab":[["أَحَدٌ","واحد","One"],["ٱلصَّمَدُ","المقصود في الحاجات","The Eternal Refuge"],["يَلِدْ","يكون له ولد","To beget"],["كُفُوًا","مثيل","Equal"]],
+    "chain":[["☝️","ربنا واحد","Allah is One","أول آية بتقول إن ربنا واحد.","The first verse states Allah is One."],["🤲","الكل محتاجه","All need Him","الصمد: كل الخلق بيرجعوا له.","As-Samad: all creation turns to Him."],["🚫","مالوش أهل","No family","لم يلد ولم يولد.","He neither begets nor is born."],["✨","مفيش زيه","None like Him","ولم يكن له كفوًا أحد.","Nothing is equal to Him."]],
+    "true_false":[["ربنا ليه شريك","Allah has a partner",false,"لأ، ربنا أحد","No, Allah is One"],["سورة الإخلاص تعدل ثلث القرآن","Al-Ikhlas equals a third of the Quran",true,"صح، زي ما قال النبي ﷺ","Correct, as the Prophet ﷺ said"],["الصمد يعني اللي بنحتاجه","As-Samad means the one we need",true,"صح!","Correct!"]],
+    "match":{"options":["قُلْ هُوَ ٱللَّهُ أَحَدٌ","ٱللَّهُ ٱلصَّمَدُ","لَمْ يَلِدْ وَلَمْ يُولَدْ"],"items":[["صاحبك بيقول إن ربنا ليه ابن","Your friend says Allah has a son",2],["محتاج حاجة وزعلان","You need something and feel sad",1],["حد سألك ربنا كام","Someone asks how many gods",0]]},
+    "reveals":[["🌅","الصبح","Morning","اقرأ الإخلاص والمعوذتين 3 مرات","Recite it three times"],["😟","لما تخاف","When afraid","افتكر إن ربنا الصمد","Remember Allah is As-Samad"],["🎁","لما تاخد هدية","Gift","اشكر ربنا اللي رزقك","Thank Allah"],["🛏️","قبل النوم","Before sleep","اقرأها وانفخ في إيدك","Recite it before sleep"]],
+    "discussion":[{"ar":"ليه الناس بتحتاج ربنا؟","en":"Why do people need Allah?"},{"ar":"إزاي تشرح السورة لأخوك الصغير؟","en":"How would you explain it to your little brother?"}],
+    "summary":[{"emoji":"☝️","title_ar":"أحد","text_ar":"ربنا واحد","en":"Allah is One"},{"emoji":"🤲","title_ar":"صمد","text_ar":"الكل محتاجه","en":"All need Him"},{"emoji":"🚫","title_ar":"لم يلد","text_ar":"مالوش أهل","en":"No family"},{"emoji":"✨","title_ar":"لا كفء","text_ar":"مفيش زيه","en":"None like Him"}],
+    "challenge":{"ar":"اكتب 3 حاجات بتطلبها من ربنا بس","en":"Write 3 things you ask only Allah for"},
+    "quiz":[{"q":"يعني إيه «أحد»؟","e":"What does “Ahad” mean?","a":[["واحد","One"],["كبير","Big"],["قديم","Old"],["قوي","Strong"]],"c":0},{"q":"السورة دي مكية ولا مدنية؟","e":"Meccan or Medinan?","a":[["مدنية","Medinan"],["مكية","Meccan"]],"c":1},{"q":"«الصمد» يعني؟","e":"As-Samad means?","a":[["اللي الكل محتاجه","The one all need"],["الملك","The King"],["الرحيم","Merciful"],["العالي","High"]],"c":0}]
+  }
+}

@@ -3,8 +3,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "shots": "node tools/screenshot.mjs dirayah-template.html",
-    "taste": "node .claude/skills/taste-skill/scripts/inspect.mjs dirayah-template.html --out shots/taste",
+    "preview": "node tools/preview.mjs",
+    "slides": "node tools/preview.mjs && node tools/slides.mjs",
+    "shots": "node tools/screenshot.mjs shots/preview.html",
+    "taste": "node .claude/skills/taste-skill/scripts/inspect.mjs shots/preview.html --out shots/taste",
     "impeccable": ".claude/skills/impeccable/scripts/impeccable"
   },
   "devDependencies": {
